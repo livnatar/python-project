@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 class Book:
@@ -7,7 +7,7 @@ class Book:
                  author: str = None, publication_year: int = None,
                  pages: int = None, language: str = 'English', description: str = None,
                  copies_total: int = 1, copies_available: int = 1,
-                 genre_id: int = None, created_at: datetime = None):
+                 genre_id: int = None, created_at: datetime = None,  genres: List[Dict] = None):
         self.id = id
         self.isbn = isbn
         self.title = title
@@ -20,6 +20,7 @@ class Book:
         self.copies_available = copies_available
         self.genre_id = genre_id
         self.created_at = created_at or datetime.utcnow()
+        self.genres = genres or []
 
     @property
     def is_available(self) -> bool:
@@ -44,7 +45,8 @@ class Book:
             'copies_on_loan': self.copies_on_loan,
             'genre_id': self.genre_id,
             'created_at': self.created_at.isoformat() if self.created_at else None,
-            'is_available': self.is_available
+            'is_available': self.is_available,
+            'genres': self.genres
         }
 
     @classmethod
@@ -61,5 +63,6 @@ class Book:
             copies_total=data.get('copies_total', 1),
             copies_available=data.get('copies_available', 1),
             genre_id=data.get('genre_id'),
-            created_at=data.get('created_at')
+            created_at=data.get('created_at'),
+            genres=data.get('genres', [])
         )
