@@ -1,9 +1,9 @@
-# services/book_service.py
 from typing import List, Optional, Dict, Any
 from repositories.book_repository import BookRepository
 from repositories.genre_repository import GenreRepository
 from repositories.book_genre_repository import BookGenreRepository
 from models.book_model import Book
+from models.database import get_db_connection
 from utils.validators import validate_book_data
 import logging
 
@@ -17,8 +17,48 @@ class BookService:
         self.genre_repo = GenreRepository()
         self.book_genre_repo = BookGenreRepository()
 
+    def _validate_book_id(self, book_id: int) -> Optional[str]:
+        """Validate book ID format"""
+        if not isinstance(book_id, int) or book_id <= 0:
+            return 'Invalid book ID'
+        return None
+
+    def _validate_genre_id(self, genre_id: int) -> Optional[str]:
+        """Validate genre ID format"""
+        if not isinstance(genre_id, int) or genre_id <= 0:
+            return 'Invalid genre ID'
+        return None
+
+    def _validate_genres_exist(self, genre_ids: List[int]) -> Optional[str]:
+        """Validate that all genre IDs exist in database"""
+        if not genre_ids:
+            return None
+
+        for genre_id in genre_ids:
+            genre = self.genre_repo.get_by_id(genre_id)
+            if not genre:
+                return f'Genre with ID {genre_id} does not exist'
+        return None
+
+    def _handle_exception(self, operation: str, error: Exception) -> Dict[str, Any]:
+        """Handle exceptions consistently"""
+        logger.error(f"Error in {operation}: {error}")
+
+        # Handle specific constraint errors
+        error_str = str(error).lower()
+        if 'foreign key constraint' in error_str:
+            return {
+                'success': False,
+                'error': 'Cannot perform operation: referenced data is in use'
+            }
+
+        return {
+            'success': False,
+            'error': 'Internal server error'
+        }
+
     def create_book(self, book_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Create a new book with genres"""
+        """Create a new book with genres using proper transaction management"""
         try:
             # Validate input data
             validation_result = validate_book_data(book_data)
@@ -39,14 +79,9 @@ class BookService:
 
             # Validate genre IDs exist
             genre_ids = book_data.get('genre_ids', [])
-            if genre_ids:
-                for genre_id in genre_ids:
-                    genre = self.genre_repo.get_by_id(genre_id)
-                    if not genre:
-                        return {
-                            'success': False,
-                            'error': f'Genre with ID {genre_id} does not exist'
-                        }
+            genre_error = self._validate_genres_exist(genre_ids)
+            if genre_error:
+                return {'success': False, 'error': genre_error}
 
             # Create book object
             book = Book(
@@ -61,96 +96,159 @@ class BookService:
                 copies_available=book_data.get('copies_available', book_data.get('copies_total', 1))
             )
 
-            # Save book to database
-            created_book = self.book_repo.create(book)
-            if not created_book:
-                return {
-                    'success': False,
-                    'error': 'Failed to create book'
-                }
+            # Use transaction to ensure atomicity
+            with get_db_connection() as conn:
+                try:
+                    # Create book using repository with connection
+                    created_book = self.book_repo.create(book, conn=conn)
+                    if not created_book:
+                        raise Exception("Failed to create book")
 
-            # Add genre relationships
-            if genre_ids:
-                success = self.book_genre_repo.update_book_genres(created_book.id, genre_ids)
-                if not success:
-                    # If genre assignment fails, we might want to delete the book
-                    # For now, we'll just return an error
+                    # Add genre relationships if provided
+                    if genre_ids:
+                        for genre_id in genre_ids:
+                            success = self.book_genre_repo.add_genre_to_book(
+                                created_book.id, genre_id, conn=conn
+                            )
+                            if not success:
+                                raise Exception(f"Failed to add genre {genre_id} to book")
+
+                    # Commit happens automatically when exiting context manager
+
+                    # Get the complete book with genres (after commit)
+                    final_book = self.book_repo.get_by_id(created_book.id)
+
                     return {
-                        'success': False,
-                        'error': 'Book created but failed to assign genres'
+                        'success': True,
+                        'data': final_book.to_dict(),
+                        'message': 'Book created successfully'
                     }
 
-                # Refresh book with genres
-                created_book = self.book_repo.get_by_id(created_book.id)
-
-            return {
-                'success': True,
-                'data': created_book.to_dict(),
-                'message': 'Book created successfully'
-            }
+                except Exception as db_error:
+                    # Rollback happens automatically on exception
+                    raise db_error
 
         except Exception as e:
-            logger.error(f"Error in create_book: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('create_book', e)
+
+    def update_book(self, book_id: int, book_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Update an existing book including genres using proper transaction management"""
+        try:
+            # Validate book ID
+            book_id_error = self._validate_book_id(book_id)
+            if book_id_error:
+                return {'success': False, 'error': book_id_error}
+
+            # Check if book exists
+            existing_book = self.book_repo.get_by_id(book_id)
+            if not existing_book:
+                return {'success': False, 'error': 'Book not found'}
+
+            # Validate input data
+            validation_result = validate_book_data(book_data)
+            if not validation_result['valid']:
+                return {
+                    'success': False,
+                    'error': 'Validation failed',
+                    'details': validation_result['errors']
+                }
+
+            # Check if another book with same ISBN exists
+            isbn_check = self.book_repo.get_by_isbn(book_data['isbn'])
+            if isbn_check and isbn_check.id != book_id:
+                return {
+                    'success': False,
+                    'error': 'Another book with this ISBN already exists'
+                }
+
+            # Validate genre IDs exist
+            genre_ids = book_data.get('genre_ids', [])
+            genre_error = self._validate_genres_exist(genre_ids)
+            if genre_error:
+                return {'success': False, 'error': genre_error}
+
+            # Create updated book object
+            updated_book_data = Book(
+                isbn=book_data['isbn'].strip(),
+                title=book_data['title'].strip(),
+                author=book_data['author'].strip(),
+                publication_year=book_data.get('publication_year'),
+                pages=book_data.get('pages'),
+                language=book_data.get('language', 'English').strip(),
+                description=book_data.get('description', '').strip(),
+                copies_total=book_data.get('copies_total', existing_book.copies_total),
+                copies_available=book_data.get('copies_available', existing_book.copies_available)
+            )
+
+            # Use transaction to ensure atomicity
+            with get_db_connection() as conn:
+                try:
+                    # Update book using repository with connection
+                    updated_book = self.book_repo.update(book_id, updated_book_data, conn=conn)
+                    if not updated_book:
+                        raise Exception("Failed to update book")
+
+                    # Update genre relationships if provided
+                    if 'genre_ids' in book_data:
+                        # Remove existing genre relationships
+                        self.book_genre_repo.remove_all_genres_from_book(book_id, conn=conn)
+
+                        # Add new genre relationships
+                        for genre_id in genre_ids:
+                            success = self.book_genre_repo.add_genre_to_book(
+                                book_id, genre_id, conn=conn
+                            )
+                            if not success:
+                                raise Exception(f"Failed to add genre {genre_id} to book")
+
+                    # Commit happens automatically when exiting context manager
+
+                    # Get updated book with genres
+                    final_book = self.book_repo.get_by_id(book_id)
+
+                    return {
+                        'success': True,
+                        'data': final_book.to_dict(),
+                        'message': 'Book updated successfully'
+                    }
+
+                except Exception as db_error:
+                    # Rollback happens automatically on exception
+                    raise db_error
+
+        except Exception as e:
+            return self._handle_exception('update_book', e)
 
     def get_book_by_id(self, book_id: int) -> Dict[str, Any]:
         """Get book by ID with genres"""
         try:
-            if not isinstance(book_id, int) or book_id <= 0:
-                return {
-                    'success': False,
-                    'error': 'Invalid book ID'
-                }
+            book_id_error = self._validate_book_id(book_id)
+            if book_id_error:
+                return {'success': False, 'error': book_id_error}
 
             book = self.book_repo.get_by_id(book_id)
             if book:
-                return {
-                    'success': True,
-                    'data': book.to_dict()
-                }
+                return {'success': True, 'data': book.to_dict()}
             else:
-                return {
-                    'success': False,
-                    'error': 'Book not found'
-                }
+                return {'success': False, 'error': 'Book not found'}
 
         except Exception as e:
-            logger.error(f"Error in get_book_by_id: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('get_book_by_id', e)
 
     def get_book_by_isbn(self, isbn: str) -> Dict[str, Any]:
         """Get book by ISBN with genres"""
         try:
             if not isbn or not isbn.strip():
-                return {
-                    'success': False,
-                    'error': 'ISBN is required'
-                }
+                return {'success': False, 'error': 'ISBN is required'}
 
             book = self.book_repo.get_by_isbn(isbn.strip())
             if book:
-                return {
-                    'success': True,
-                    'data': book.to_dict()
-                }
+                return {'success': True, 'data': book.to_dict()}
             else:
-                return {
-                    'success': False,
-                    'error': 'Book not found'
-                }
+                return {'success': False, 'error': 'Book not found'}
 
         except Exception as e:
-            logger.error(f"Error in get_book_by_isbn: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('get_book_by_isbn', e)
 
     def get_all_books(self, page: int = 1, per_page: int = 20, search: str = None,
                       genre_id: int = None, available_only: bool = False) -> Dict[str, Any]:
@@ -165,7 +263,7 @@ class BookService:
 
             if available_only:
                 books = self.book_repo.get_available_books(limit=per_page, offset=offset)
-                total = self.book_repo.count()  # This could be improved to count only available
+                total = self.book_repo.count()  # Could be improved to count only available
             elif search and search.strip():
                 genre_ids = [genre_id] if genre_id else None
                 books = self.book_repo.search(search.strip(), genre_ids=genre_ids, limit=per_page)
@@ -194,160 +292,35 @@ class BookService:
             }
 
         except Exception as e:
-            logger.error(f"Error in get_all_books: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
-
-    def update_book(self, book_id: int, book_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Update an existing book including genres"""
-        try:
-            # Validate book ID
-            if not isinstance(book_id, int) or book_id <= 0:
-                return {
-                    'success': False,
-                    'error': 'Invalid book ID'
-                }
-
-            # Check if book exists
-            existing_book = self.book_repo.get_by_id(book_id)
-            if not existing_book:
-                return {
-                    'success': False,
-                    'error': 'Book not found'
-                }
-
-            # Validate input data
-            validation_result = validate_book_data(book_data)
-            if not validation_result['valid']:
-                return {
-                    'success': False,
-                    'error': 'Validation failed',
-                    'details': validation_result['errors']
-                }
-
-            # Check if another book with same ISBN exists
-            isbn_check = self.book_repo.get_by_isbn(book_data['isbn'])
-            if isbn_check and isbn_check.id != book_id:
-                return {
-                    'success': False,
-                    'error': 'Another book with this ISBN already exists'
-                }
-
-            # Validate genre IDs exist
-            genre_ids = book_data.get('genre_ids', [])
-            if genre_ids:
-                for genre_id in genre_ids:
-                    genre = self.genre_repo.get_by_id(genre_id)
-                    if not genre:
-                        return {
-                            'success': False,
-                            'error': f'Genre with ID {genre_id} does not exist'
-                        }
-
-            # Update book object
-            updated_book = Book(
-                id=book_id,
-                isbn=book_data['isbn'].strip(),
-                title=book_data['title'].strip(),
-                author=book_data['author'].strip(),
-                publication_year=book_data.get('publication_year'),
-                pages=book_data.get('pages'),
-                language=book_data.get('language', 'English').strip(),
-                description=book_data.get('description', '').strip(),
-                copies_total=book_data.get('copies_total', existing_book.copies_total),
-                copies_available=book_data.get('copies_available', existing_book.copies_available),
-            )
-
-            # Save book to database
-            result = self.book_repo.update(book_id, updated_book)
-            if not result:
-                return {
-                    'success': False,
-                    'error': 'Failed to update book'
-                }
-
-            # Update genre relationships if provided
-            if 'genre_ids' in book_data:
-                success = self.book_genre_repo.update_book_genres(book_id, genre_ids)
-                if not success:
-                    return {
-                        'success': False,
-                        'error': 'Book updated but failed to update genres'
-                    }
-
-                # Refresh book with updated genres
-                result = self.book_repo.get_by_id(book_id)
-
-            return {
-                'success': True,
-                'data': result.to_dict(),
-                'message': 'Book updated successfully'
-            }
-
-        except Exception as e:
-            logger.error(f"Error in update_book: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('get_all_books', e)
 
     def delete_book(self, book_id: int) -> Dict[str, Any]:
         """Delete a book"""
         try:
-            # Validate book ID
-            if not isinstance(book_id, int) or book_id <= 0:
-                return {
-                    'success': False,
-                    'error': 'Invalid book ID'
-                }
+            book_id_error = self._validate_book_id(book_id)
+            if book_id_error:
+                return {'success': False, 'error': book_id_error}
 
             # Check if book exists
             existing_book = self.book_repo.get_by_id(book_id)
             if not existing_book:
-                return {
-                    'success': False,
-                    'error': 'Book not found'
-                }
+                return {'success': False, 'error': 'Book not found'}
 
-            # TODO: Check if book has active loans/reservations
-            # For now, we'll allow deletion (constraints will handle it)
-
-            # Delete book (this will also delete book-genre relationships due to CASCADE)
+            # Delete book (CASCADE will handle book-genre relationships)
             success = self.book_repo.delete(book_id)
             if success:
-                return {
-                    'success': True,
-                    'message': 'Book deleted successfully'
-                }
+                return {'success': True, 'message': 'Book deleted successfully'}
             else:
-                return {
-                    'success': False,
-                    'error': 'Failed to delete book'
-                }
+                return {'success': False, 'error': 'Failed to delete book'}
 
         except Exception as e:
-            logger.error(f"Error in delete_book: {e}")
-            # Handle foreign key constraint error
-            if 'foreign key constraint' in str(e).lower():
-                return {
-                    'success': False,
-                    'error': 'Cannot delete book: it has active loans or reservations'
-                }
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('delete_book', e)
 
     def search_books(self, search_term: str, genre_ids: List[int] = None) -> Dict[str, Any]:
         """Search books by title, author, or ISBN"""
         try:
             if not search_term or not search_term.strip():
-                return {
-                    'success': False,
-                    'error': 'Search term is required'
-                }
+                return {'success': False, 'error': 'Search term is required'}
 
             books = self.book_repo.search(search_term.strip(), genre_ids=genre_ids)
             return {
@@ -358,43 +331,28 @@ class BookService:
             }
 
         except Exception as e:
-            logger.error(f"Error in search_books: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('search_books', e)
 
     def add_genre_to_book(self, book_id: int, genre_id: int) -> Dict[str, Any]:
         """Add a genre to a book"""
         try:
-            # Validate IDs
-            if not isinstance(book_id, int) or book_id <= 0:
-                return {
-                    'success': False,
-                    'error': 'Invalid book ID'
-                }
+            book_id_error = self._validate_book_id(book_id)
+            if book_id_error:
+                return {'success': False, 'error': book_id_error}
 
-            if not isinstance(genre_id, int) or genre_id <= 0:
-                return {
-                    'success': False,
-                    'error': 'Invalid genre ID'
-                }
+            genre_id_error = self._validate_genre_id(genre_id)
+            if genre_id_error:
+                return {'success': False, 'error': genre_id_error}
 
             # Check if book exists
             book = self.book_repo.get_by_id(book_id)
             if not book:
-                return {
-                    'success': False,
-                    'error': 'Book not found'
-                }
+                return {'success': False, 'error': 'Book not found'}
 
             # Check if genre exists
             genre = self.genre_repo.get_by_id(genre_id)
             if not genre:
-                return {
-                    'success': False,
-                    'error': 'Genre not found'
-                }
+                return {'success': False, 'error': 'Genre not found'}
 
             # Check if book already has 5 genres (limit)
             current_genre_count = self.book_genre_repo.count_genres_for_book(book_id)
@@ -407,7 +365,6 @@ class BookService:
             # Add genre to book
             result = self.book_genre_repo.add_genre_to_book(book_id, genre_id)
             if result:
-                # Get updated book with genres
                 updated_book = self.book_repo.get_by_id(book_id)
                 return {
                     'success': True,
@@ -421,43 +378,28 @@ class BookService:
                 }
 
         except Exception as e:
-            logger.error(f"Error in add_genre_to_book: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('add_genre_to_book', e)
 
     def remove_genre_from_book(self, book_id: int, genre_id: int) -> Dict[str, Any]:
         """Remove a genre from a book"""
         try:
-            # Validate IDs
-            if not isinstance(book_id, int) or book_id <= 0:
-                return {
-                    'success': False,
-                    'error': 'Invalid book ID'
-                }
+            book_id_error = self._validate_book_id(book_id)
+            if book_id_error:
+                return {'success': False, 'error': book_id_error}
 
-            if not isinstance(genre_id, int) or genre_id <= 0:
-                return {
-                    'success': False,
-                    'error': 'Invalid genre ID'
-                }
+            genre_id_error = self._validate_genre_id(genre_id)
+            if genre_id_error:
+                return {'success': False, 'error': genre_id_error}
 
             # Check if book exists
             book = self.book_repo.get_by_id(book_id)
             if not book:
-                return {
-                    'success': False,
-                    'error': 'Book not found'
-                }
+                return {'success': False, 'error': 'Book not found'}
 
             # Check if genre exists
             genre = self.genre_repo.get_by_id(genre_id)
             if not genre:
-                return {
-                    'success': False,
-                    'error': 'Genre not found'
-                }
+                return {'success': False, 'error': 'Genre not found'}
 
             # Check if this would leave the book with no genres
             current_genre_count = self.book_genre_repo.count_genres_for_book(book_id)
@@ -470,7 +412,6 @@ class BookService:
             # Remove genre from book
             success = self.book_genre_repo.remove_genre_from_book(book_id, genre_id)
             if success:
-                # Get updated book with genres
                 updated_book = self.book_repo.get_by_id(book_id)
                 return {
                     'success': True,
@@ -484,21 +425,14 @@ class BookService:
                 }
 
         except Exception as e:
-            logger.error(f"Error in remove_genre_from_book: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('remove_genre_from_book', e)
 
     def update_book_availability(self, book_id: int, copies_available: int) -> Dict[str, Any]:
         """Update book availability (used for loans/returns)"""
         try:
-            # Validate book ID
-            if not isinstance(book_id, int) or book_id <= 0:
-                return {
-                    'success': False,
-                    'error': 'Invalid book ID'
-                }
+            book_id_error = self._validate_book_id(book_id)
+            if book_id_error:
+                return {'success': False, 'error': book_id_error}
 
             # Validate copies_available
             if not isinstance(copies_available, int) or copies_available < 0:
@@ -510,10 +444,7 @@ class BookService:
             # Check if book exists
             book = self.book_repo.get_by_id(book_id)
             if not book:
-                return {
-                    'success': False,
-                    'error': 'Book not found'
-                }
+                return {'success': False, 'error': 'Book not found'}
 
             # Check if available copies doesn't exceed total copies
             if copies_available > book.copies_total:
@@ -525,7 +456,6 @@ class BookService:
             # Update availability
             success = self.book_repo.update_availability(book_id, copies_available)
             if success:
-                # Get updated book
                 updated_book = self.book_repo.get_by_id(book_id)
                 return {
                     'success': True,
@@ -533,17 +463,10 @@ class BookService:
                     'message': 'Book availability updated successfully'
                 }
             else:
-                return {
-                    'success': False,
-                    'error': 'Failed to update book availability'
-                }
+                return {'success': False, 'error': 'Failed to update book availability'}
 
         except Exception as e:
-            logger.error(f"Error in update_book_availability: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('update_book_availability', e)
 
     def get_available_books(self, page: int = 1, per_page: int = 20) -> Dict[str, Any]:
         """Get all currently available books"""
@@ -571,8 +494,4 @@ class BookService:
             }
 
         except Exception as e:
-            logger.error(f"Error in get_available_books: {e}")
-            return {
-                'success': False,
-                'error': 'Internal server error'
-            }
+            return self._handle_exception('get_available_books', e)

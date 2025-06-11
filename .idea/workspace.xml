@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="add book repository">
-      <change afterPath="$PROJECT_DIR$/utils/validators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/python-project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/python-project.iml" afterDir="false" />
+    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="add validation">
+      <change afterPath="$PROJECT_DIR$/routes/book_routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/init.txt" beforeDir="false" afterPath="$PROJECT_DIR$/services/book_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repositories/book_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/book_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/book_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/book_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +102,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749651676262</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="add validation">
+      <option name="closed" value="true" />
+      <created>1749653714153</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1749653714153</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -110,6 +118,7 @@
     <MESSAGE value="start models" />
     <MESSAGE value="start book_genre_repository" />
     <MESSAGE value="add book repository" />
-    <option name="LAST_COMMIT_MESSAGE" value="add book repository" />
+    <MESSAGE value="add validation" />
+    <option name="LAST_COMMIT_MESSAGE" value="add validation" />
   </component>
 </project>

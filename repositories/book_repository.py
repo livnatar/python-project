@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 class BookRepository:
 
     @staticmethod
-    def create(book: Book) -> Optional[Book]:
-        """Create a new book"""
+    def create(book: Book, conn=None) -> Optional[Book]:
+        """Create a new book - supports both standalone and transactional usage"""
         query = """
             INSERT INTO books (isbn, title, author, publication_year, pages, 
                              language, description, copies_total, copies_available)
@@ -20,17 +20,32 @@ class BookRepository:
                      language, description, copies_total, copies_available
         """
         try:
-            result = execute_single_query(query, (
-                book.isbn, book.title, book.author, book.publication_year,
-                book.pages, book.language, book.description, book.copies_total,
-                book.copies_available
-            ))
-            if result:
-                created_book = Book.from_dict(dict(result))
-                # Get genres for this book (will be empty for new book)
-                created_book.genres = BookGenreRepository.get_genres_by_book_id(created_book.id)
-                return created_book
-            return None
+            if conn:
+                # Use provided connection (transactional)
+                with conn.cursor() as cursor:
+                    cursor.execute(query, (
+                        book.isbn, book.title, book.author, book.publication_year,
+                        book.pages, book.language, book.description, book.copies_total,
+                        book.copies_available
+                    ))
+                    result = cursor.fetchone()
+                    if result:
+                        created_book = Book.from_dict(dict(result))
+                        return created_book
+                    return None
+            else:
+                # Use standalone execution
+                result = execute_single_query(query, (
+                    book.isbn, book.title, book.author, book.publication_year,
+                    book.pages, book.language, book.description, book.copies_total,
+                    book.copies_available
+                ))
+                if result:
+                    created_book = Book.from_dict(dict(result))
+                    # Get genres for this book (will be empty for new book)
+                    created_book.genres = BookGenreRepository.get_genres_by_book_id(created_book.id)
+                    return created_book
+                return None
         except Exception as e:
             logger.error(f"Error creating book: {e}")
             raise
@@ -60,7 +75,7 @@ class BookRepository:
     def get_by_isbn(isbn: str) -> Optional[Book]:
         """Get book by ISBN with genres"""
         query = """
-            SELECT id, isbn, title, author,publication_year, pages, 
+            SELECT id, isbn, title, author, publication_year, pages, 
                    language, description, copies_total, copies_available
             FROM books 
             WHERE isbn = %s
@@ -169,8 +184,8 @@ class BookRepository:
             raise
 
     @staticmethod
-    def update(book_id: int, book: Book) -> Optional[Book]:
-        """Update an existing book"""
+    def update(book_id: int, book: Book, conn=None) -> Optional[Book]:
+        """Update an existing book - supports both standalone and transactional usage"""
         query = """
             UPDATE books 
             SET isbn = %s, title = %s, author = %s, publication_year = %s,
@@ -181,17 +196,32 @@ class BookRepository:
                      language, description, copies_total, copies_available
         """
         try:
-            result = execute_single_query(query, (
-                book.isbn, book.title, book.author, book.publication_year,
-                book.pages, book.language, book.description, book.copies_total,
-                book.copies_available, book_id
-            ))
-            if result:
-                updated_book = Book.from_dict(dict(result))
-                # Get genres for this book
-                updated_book.genres = BookGenreRepository.get_genres_by_book_id(book_id)
-                return updated_book
-            return None
+            if conn:
+                # Use provided connection (transactional)
+                with conn.cursor() as cursor:
+                    cursor.execute(query, (
+                        book.isbn, book.title, book.author, book.publication_year,
+                        book.pages, book.language, book.description, book.copies_total,
+                        book.copies_available, book_id
+                    ))
+                    result = cursor.fetchone()
+                    if result:
+                        updated_book = Book.from_dict(dict(result))
+                        return updated_book
+                    return None
+            else:
+                # Use standalone execution
+                result = execute_single_query(query, (
+                    book.isbn, book.title, book.author, book.publication_year,
+                    book.pages, book.language, book.description, book.copies_total,
+                    book.copies_available, book_id
+                ))
+                if result:
+                    updated_book = Book.from_dict(dict(result))
+                    # Get genres for this book
+                    updated_book.genres = BookGenreRepository.get_genres_by_book_id(book_id)
+                    return updated_book
+                return None
         except Exception as e:
             logger.error(f"Error updating book {book_id}: {e}")
             raise
