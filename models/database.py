@@ -84,6 +84,26 @@ def execute_single_query(query, params=None):
             conn.close()
 
 
+def test_connection():
+    """Test database connection with detailed error reporting"""
+    try:
+        print(f"Connecting to database: {DB_HOST}:{DB_PORT}/{DB_NAME}")
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT version();")
+        version = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        logger.info(f"✅ Connected to PostgreSQL: {version[0]}")
+        return True
+    except psycopg2.OperationalError as e:
+        logger.error(f"❌ Database connection failed: {e}")
+        logger.error(f"Connection details: {DB_HOST}:{DB_PORT}/{DB_NAME} as {DB_USER}")
+        return False
+    except Exception as e:
+        logger.error(f"❌ Connection test failed: {e}")
+        return False
+
 if __name__ == "__main__":
     # Read and execute SQL file
     try:

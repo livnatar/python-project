@@ -15,7 +15,7 @@ class GenreRepository:
         query = """
             INSERT INTO genres (name, description)
             VALUES (%s, %s)
-            RETURNING id, name, description, created_at
+            RETURNING id, name, description
         """
         try:
             result = execute_single_query(query, (genre.name, genre.description))
@@ -29,7 +29,7 @@ class GenreRepository:
     @staticmethod
     def get_by_id(genre_id: int) -> Optional[Genre]:
         """Get genre by ID"""
-        query = "SELECT id, name, description, created_at FROM genres WHERE id = %s"
+        query = "SELECT id, name, description FROM genres WHERE id = %s"
         try:
             result = execute_single_query(query, (genre_id,))
             if result:
@@ -42,7 +42,7 @@ class GenreRepository:
     @staticmethod
     def get_by_name(name: str) -> Optional[Genre]:
         """Get genre by name"""
-        query = "SELECT id, name, description, created_at FROM genres WHERE LOWER(name) = LOWER(%s)"
+        query = "SELECT id, name, description FROM genres WHERE LOWER(name) = LOWER(%s)"
         try:
             result = execute_single_query(query, (name,))
             if result:
@@ -56,7 +56,7 @@ class GenreRepository:
     def get_all(limit: int = 100, offset: int = 0) -> List[Genre]:
         """Get all genres with pagination"""
         query = """
-            SELECT id, name, description, created_at 
+            SELECT id, name, description
             FROM genres 
             ORDER BY name 
             LIMIT %s OFFSET %s
@@ -75,7 +75,7 @@ class GenreRepository:
             UPDATE genres 
             SET name = %s, description = %s
             WHERE id = %s
-            RETURNING id, name, description, created_at
+            RETURNING id, name, description
         """
         try:
             result = execute_single_query(query, (genre.name, genre.description, genre_id))
@@ -112,7 +112,7 @@ class GenreRepository:
     def search(search_term: str, limit: int = 50) -> List[Genre]:
         """Search genres by name or description"""
         query = """
-            SELECT id, name, description, created_at 
+            SELECT id, name, description 
             FROM genres 
             WHERE LOWER(name) LIKE LOWER(%s) OR LOWER(description) LIKE LOWER(%s)
             ORDER BY name 
