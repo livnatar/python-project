@@ -82,3 +82,20 @@ def execute_single_query(query, params=None):
             cursor.close()
         if conn:
             conn.close()
+
+
+if __name__ == "__main__":
+    # Read and execute SQL file
+    try:
+        with open('init_tables.sql', 'r', encoding='utf-8') as file:
+            sql_content = file.read()
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(sql_content)
+        conn.commit()
+        print("Tables created successfully!")
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error: {e}")

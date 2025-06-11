@@ -103,8 +103,8 @@ INSERT INTO users (username, email, password_hash, first_name, last_name, phone,
 ON CONFLICT (username) DO NOTHING;
 
 -- Insert sample books
-INSERT INTO books (isbn, title, author, publisher, publication_year, pages, description, copies_total, copies_available, location, genre_id) VALUES
-('9780134685991', 'Effective Java', 'Joshua Bloch', 'Addison-Wesley', 2017, 412, 'Best practices for Java programming', 3, 3, 'A1-001', 10),
-('9780321127426', 'Patterns of Enterprise Application Architecture', 'Martin Fowler', 'Addison-Wesley', 2002, 560, 'Architecture patterns for enterprise applications', 2, 2, 'A1-002', 10),
-('9780132350884', 'Clean Code', 'Robert C. Martin', 'Prentice Hall', 2008, 464, 'A handbook of agile software craftsmanship', 5, 5, 'A1-003', 10)
+INSERT INTO books (isbn, title, author, publication_year, pages, description, copies_total, copies_available, genre_id) VALUES
+('9780134685991', 'Effective Java', 'Joshua Bloch', 2017, 412, 'Best practices for Java programming', 3, 3, 10),
+('9780321127426', 'Patterns of Enterprise Application Architecture', 'Martin Fowler', 2002, 560, 'Architecture patterns for enterprise applications', 2, 2, 10),
+('9780132350884', 'Clean Code', 'Robert C. Martin', 2008, 464, 'A handbook of agile software craftsmanship', 5, 5, 10)
 ON CONFLICT (isbn) DO NOTHING;
