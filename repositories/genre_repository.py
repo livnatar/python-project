@@ -1,8 +1,8 @@
 import logging
 from typing import List, Optional
 
-from ..models.database import execute_query, execute_single_query
-from ..models.genre_model import Genre
+from models.database import execute_query, execute_single_query
+from models.genre_model import Genre
 
 logger = logging.getLogger(__name__)
 
