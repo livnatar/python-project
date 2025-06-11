@@ -6,8 +6,7 @@ class Book:
     def __init__(self, id: int = None, isbn: str = None, title: str = None,
                  author: str = None, publication_year: int = None,
                  pages: int = None, language: str = 'English', description: str = None,
-                 copies_total: int = 1, copies_available: int = 1,
-                 genre_id: int = None, created_at: datetime = None,  genres: List[Dict] = None):
+                 copies_total: int = 1, copies_available: int = 1, genres: List[Dict] = None):
         self.id = id
         self.isbn = isbn
         self.title = title
@@ -18,8 +17,6 @@ class Book:
         self.description = description
         self.copies_total = copies_total
         self.copies_available = copies_available
-        self.genre_id = genre_id
-        self.created_at = created_at or datetime.utcnow()
         self.genres = genres or []
 
     @property
@@ -43,8 +40,6 @@ class Book:
             'copies_total': self.copies_total,
             'copies_available': self.copies_available,
             'copies_on_loan': self.copies_on_loan,
-            'genre_id': self.genre_id,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
             'is_available': self.is_available,
             'genres': self.genres
         }
@@ -62,7 +57,5 @@ class Book:
             description=data.get('description'),
             copies_total=data.get('copies_total', 1),
             copies_available=data.get('copies_available', 1),
-            genre_id=data.get('genre_id'),
-            created_at=data.get('created_at'),
             genres=data.get('genres', [])
         )

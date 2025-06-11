@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="start models">
-      <change afterPath="$PROJECT_DIR$/repositories/book_genre_repository.py" afterDir="false" />
+    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="start book_genre_repository">
+      <change afterPath="$PROJECT_DIR$/repositories/book_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/python-project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/python-project.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/book_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/book_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,12 +86,21 @@
       <option name="project" value="LOCAL" />
       <updated>1749646588635</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="start book_genre_repository">
+      <option name="closed" value="true" />
+      <created>1749649700312</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1749649700312</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="project init" />
     <MESSAGE value="start models" />
-    <option name="LAST_COMMIT_MESSAGE" value="start models" />
+    <MESSAGE value="start book_genre_repository" />
+    <option name="LAST_COMMIT_MESSAGE" value="start book_genre_repository" />
   </component>
 </project>
