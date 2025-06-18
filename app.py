@@ -13,10 +13,9 @@ logging.basicConfig(
 from routes.genre_routes import genre_bp
 from routes.book_routes import book_bp
 from routes.user_routes import user_bp
+from routes.loan_routes import loan_bp
 
 # Other routes will be imported as we create them
-
-# from routes.loan_routes import loan_bp
 # from routes.reservation_routes import reservation_bp
 
 def create_app(config_class=Config):
@@ -28,9 +27,9 @@ def create_app(config_class=Config):
     app.register_blueprint(genre_bp, url_prefix='/api/genres')
     app.register_blueprint(book_bp, url_prefix='/api/books')
     app.register_blueprint(user_bp, url_prefix='/api/users')
+    app.register_blueprint(loan_bp, url_prefix='/api/loans')
 
     # Other blueprints will be registered as we create them
-    # app.register_blueprint(loan_bp, url_prefix='/api/loans')
     # app.register_blueprint(reservation_bp, url_prefix='/api/reservations')
 
     # Root endpoint
@@ -117,5 +116,20 @@ if __name__ == '__main__':
     print('DELETE /api/users/<id>')
     print('POST /api/users/authenticate')
     print('GET /api/users/stats')
+    print("\n=== LOAN ENDPOINTS ===")
+    print("  - GET    /api/loans")
+    print("  - POST   /api/loans")
+    print("  - GET    /api/loans/<loan_id>")
+    print("  - PUT    /api/loans/<loan_id>/return")
+    print("  - PUT    /api/loans/<loan_id>/renew")
+    print("  - DELETE /api/loans/<loan_id>?force=true")
+    print("  - GET    /api/loans/overdue")
+    print("  - GET    /api/loans/statistics")
+    print("  - GET    /api/loans/user/<user_id>")
+    print("  - GET    /api/loans/user/<user_id>/active")
+    print("  - GET    /api/loans/book/<book_id>")
+    print("  - GET    /api/loans/book/<book_id>/current")
+    print("  - GET    /api/loans/book/<book_id>/availability")
+
 
     app.run(debug=True, host='0.0.0.0', port=5000)
