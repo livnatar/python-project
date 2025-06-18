@@ -144,25 +144,6 @@ class BookService:
         except Exception as e:
             return self._handle_exception('create_book', e)
 
-
-        #             # Commit happens automatically when exiting context manager
-        #
-        #             # Get the complete book with genres (after commit)
-        #             final_book = self.book_repo.get_by_id(created_book.id)
-        #
-        #             return {
-        #                 'success': True,
-        #                 'data': final_book.to_dict(),
-        #                 'message': 'Book created successfully'
-        #             }
-        #
-        #         except Exception as db_error:
-        #             # Rollback happens automatically on exception
-        #             raise db_error
-        #
-        # except Exception as e:
-        #     return self._handle_exception('create_book', e)
-
     def update_book(self, book_id: int, book_data: Dict[str, Any]) -> Dict[str, Any]:
         """Update an existing book including genres using proper transaction management"""
         try:
