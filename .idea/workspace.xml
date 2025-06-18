@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="add route_helpers and update routes">
-      <change afterPath="$PROJECT_DIR$/repositories/open_library_repository.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/external_routes.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/external_service.py" afterDir="false" />
+    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="start to add external api">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repositories/open_library_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/open_library_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/external_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/external_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/external_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/external_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,7 +167,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750259118619</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="start to add external api">
+      <option name="closed" value="true" />
+      <created>1750262828074</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1750262828075</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -183,6 +190,7 @@
     <MESSAGE value="refactor the genre_service.py" />
     <MESSAGE value="update book_service.py" />
     <MESSAGE value="add route_helpers and update routes" />
-    <option name="LAST_COMMIT_MESSAGE" value="add route_helpers and update routes" />
+    <MESSAGE value="start to add external api" />
+    <option name="LAST_COMMIT_MESSAGE" value="start to add external api" />
   </component>
 </project>
