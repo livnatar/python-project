@@ -94,14 +94,14 @@ def test_connection():
         version = cursor.fetchone()
         cursor.close()
         conn.close()
-        logger.info(f"✅ Connected to PostgreSQL: {version[0]}")
+        logger.info(f"Connected to PostgreSQL: {version[0]}")
         return True
     except psycopg2.OperationalError as e:
-        logger.error(f"❌ Database connection failed: {e}")
+        logger.error(f"Database connection failed: {e}")
         logger.error(f"Connection details: {DB_HOST}:{DB_PORT}/{DB_NAME} as {DB_USER}")
         return False
     except Exception as e:
-        logger.error(f"❌ Connection test failed: {e}")
+        logger.error(f"Connection test failed: {e}")
         return False
 
 if __name__ == "__main__":
