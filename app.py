@@ -12,9 +12,10 @@ logging.basicConfig(
 # Import routes
 from routes.genre_routes import genre_bp
 from routes.book_routes import book_bp
+from routes.user_routes import user_bp
 
 # Other routes will be imported as we create them
-# from routes.user_routes import user_bp
+
 # from routes.loan_routes import loan_bp
 # from routes.reservation_routes import reservation_bp
 
@@ -26,9 +27,9 @@ def create_app(config_class=Config):
     # Register blueprints
     app.register_blueprint(genre_bp, url_prefix='/api/genres')
     app.register_blueprint(book_bp, url_prefix='/api/books')
+    app.register_blueprint(user_bp, url_prefix='/api/users')
 
     # Other blueprints will be registered as we create them
-    # app.register_blueprint(user_bp, url_prefix='/api/users')
     # app.register_blueprint(loan_bp, url_prefix='/api/loans')
     # app.register_blueprint(reservation_bp, url_prefix='/api/reservations')
 
@@ -106,5 +107,15 @@ if __name__ == '__main__':
     print("  - POST   /api/books/<id>/genres")
     print("  - DELETE /api/books/<id>/genres/<genre_id>")
     print("  - PUT    /api/books/<id>/availability")
+    print("\n=== USER ENDPOINTS ===")
+    print('POST /api/users')
+    print('GET /api/users')
+    print('GET /api/users/<id>')
+    print('GET /api/users/username/<username>')
+    print('PUT /api/users/<id>')
+    print('PUT /api/users/<id>/password')
+    print('DELETE /api/users/<id>')
+    print('POST /api/users/authenticate')
+    print('GET /api/users/stats')
 
     app.run(debug=True, host='0.0.0.0', port=5000)
