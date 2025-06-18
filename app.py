@@ -14,6 +14,7 @@ from routes.genre_routes import genre_bp
 from routes.book_routes import book_bp
 from routes.user_routes import user_bp
 from routes.loan_routes import loan_bp
+from routes.external_routes import external_bp
 
 # Other routes will be imported as we create them
 # from routes.reservation_routes import reservation_bp
@@ -28,6 +29,7 @@ def create_app(config_class=Config):
     app.register_blueprint(book_bp, url_prefix='/api/books')
     app.register_blueprint(user_bp, url_prefix='/api/users')
     app.register_blueprint(loan_bp, url_prefix='/api/loans')
+    app.register_blueprint(external_bp, url_prefix='/api/external')
 
     # Other blueprints will be registered as we create them
     # app.register_blueprint(reservation_bp, url_prefix='/api/reservations')
