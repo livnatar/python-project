@@ -107,7 +107,7 @@ def test_connection():
 if __name__ == "__main__":
     # Read and execute SQL file
     try:
-        with open('init_tables.sql', 'r', encoding='utf-8') as file:
+        with open('schema.sql', 'r', encoding='utf-8') as file:
             sql_content = file.read()
 
         conn = get_db_connection()

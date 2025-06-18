@@ -108,28 +108,60 @@ class BookService:
                     if genre_ids:
                         for genre_id in genre_ids:
                             success = self.book_genre_repo.add_genre_to_book(
-                                created_book.id, genre_id, conn=conn
-                            )
+                                created_book.id, genre_id, conn=conn)
                             if not success:
                                 raise Exception(f"Failed to add genre {genre_id} to book")
 
                     # Commit happens automatically when exiting context manager
 
-                    # Get the complete book with genres (after commit)
-                    final_book = self.book_repo.get_by_id(created_book.id)
-
-                    return {
-                        'success': True,
-                        'data': final_book.to_dict(),
-                        'message': 'Book created successfully'
-                    }
-
                 except Exception as db_error:
                     # Rollback happens automatically on exception
                     raise db_error
 
+            # Prepare the response with the created book
+            book_dict = created_book.to_dict()
+
+            # Add genre information to the response
+            if genre_ids:
+                genres = []
+                for genre_id in genre_ids:
+                    genre = self.genre_repo.get_by_id(genre_id)
+                    if genre:
+                        genres.append({
+                            'id': genre.id,
+                            'name': genre.name
+                        })
+                book_dict['genres'] = genres
+            else:
+                book_dict['genres'] = []
+
+            return {
+                'success': True,
+                'data': book_dict,
+                'message': 'Book created successfully'
+            }
+
         except Exception as e:
             return self._handle_exception('create_book', e)
+
+
+        #             # Commit happens automatically when exiting context manager
+        #
+        #             # Get the complete book with genres (after commit)
+        #             final_book = self.book_repo.get_by_id(created_book.id)
+        #
+        #             return {
+        #                 'success': True,
+        #                 'data': final_book.to_dict(),
+        #                 'message': 'Book created successfully'
+        #             }
+        #
+        #         except Exception as db_error:
+        #             # Rollback happens automatically on exception
+        #             raise db_error
+        #
+        # except Exception as e:
+        #     return self._handle_exception('create_book', e)
 
     def update_book(self, book_id: int, book_data: Dict[str, Any]) -> Dict[str, Any]:
         """Update an existing book including genres using proper transaction management"""
