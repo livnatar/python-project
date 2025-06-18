@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="add book repository, service and route">
-      <change afterPath="$PROJECT_DIR$/repositories/user_repository.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/user_routes.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/user_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/validators.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/validators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/genre_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/genre_routes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +47,7 @@
     "Python.user_routes.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feature/user-layer",
+    "git-widget-placeholder": "master",
     "last_opened_file_path": "C:/Users/livna/python-project/utils",
     "settings.editor.selected.configurable": "preferences.pluginManager"
   }
