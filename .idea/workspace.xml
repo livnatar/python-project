@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="add book repository, service and route">
+    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="refactor the genre_routes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/genre_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/genre_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/book_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/book_routes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +124,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749657949469</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="refactor the genre_routes">
+      <option name="closed" value="true" />
+      <created>1750251674542</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1750251674542</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -134,6 +142,7 @@
     <MESSAGE value="add book repository" />
     <MESSAGE value="add validation" />
     <MESSAGE value="add book repository, service and route" />
-    <option name="LAST_COMMIT_MESSAGE" value="add book repository, service and route" />
+    <MESSAGE value="refactor the genre_routes" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor the genre_routes" />
   </component>
 </project>
