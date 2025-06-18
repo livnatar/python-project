@@ -1,76 +1,14 @@
 
-from flask import Blueprint, request, jsonify
-from typing import Dict, Any
+from flask import Blueprint, request
 import logging
 from services.user_service import UserService
 from repositories.user_repository import UserRepository
+from utils.route_helpers import create_response, handle_exception, handle_service_result, get_validated_json
 
 logger = logging.getLogger(__name__)
 user_bp = Blueprint('users', __name__)
 user_service = UserService()
 
-# ========== HELPER FUNCTIONS ==========
-
-
-def create_response(success: bool, message: str, data: Any = None, errors: list = None, status_code: int = 200) -> tuple:
-    response = {
-        'success': success,
-        'message': message
-    }
-    if data is not None:
-        response['data'] = data
-    if errors:
-        response['errors'] = errors
-    return jsonify(response), status_code
-
-
-def handle_exception(func_name: str, e: Exception) -> tuple:
-    logger.error(f"Error in {func_name}: {e}")
-    return create_response(
-        success=False,
-        message='Internal server error',
-        errors=['An unexpected error occurred'],
-        status_code=500
-    )
-
-
-def handle_service_result(result: Dict, data: Any = None, success_status: int = 200, not_found_status: int = 404) -> tuple:
-    if result['success']:
-        return create_response(
-            success=True,
-            message=result['message'],
-            data=data,
-            status_code=success_status
-        )
-    else:
-        status = not_found_status if 'not found' in result['message'].lower() else 400
-        return create_response(
-            success=False,
-            message=result['message'],
-            errors=result.get('errors', []),
-            status_code=status
-        )
-
-
-def get_validated_json(required_fields: list[str] = None) -> tuple[dict, None] | tuple[None, tuple]:
-    data = request.get_json()
-    if not data:
-        return None, create_response(
-            success=False,
-            message='No data provided',
-            errors=['Request body is required'],
-            status_code=400
-        )
-    if required_fields:
-        missing = [field for field in required_fields if field not in data or data[field] is None]
-        if missing:
-            return None, create_response(
-                success=False,
-                message='Missing required fields',
-                errors=[f"Missing: {', '.join(missing)}"],
-                status_code=400
-            )
-    return data, None
 
 # ========== ROUTES ==========
 
