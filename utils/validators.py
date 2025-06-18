@@ -35,7 +35,7 @@ def validate_user_data(data: Dict[str, Any]) -> Dict[str, Any]:
     errors = []
 
     # Required fields
-    required_fields = ['username', 'email', 'first_name', 'last_name']
+    required_fields = ['username', 'email', 'first_name', 'last_name', 'password']
     for field in required_fields:
         if not data.get(field):
             errors.append(f'{field.replace("_", " ").title()} is required')
@@ -62,6 +62,22 @@ def validate_user_data(data: Dict[str, Any]) -> Dict[str, Any]:
         phone = data['phone'].strip()
         if not re.match(r'^[\d\s\-\+\(\)]+$', phone):
             errors.append('Invalid phone format')
+
+        # Password validation
+    if data.get('password'):
+        password = data['password']
+        if len(password) < 8:
+            errors.append('Password must be at least 8 characters long')
+        if not re.search(r'[A-Z]', password):
+            errors.append('Password must contain at least one uppercase letter')
+        if not re.search(r'[a-z]', password):
+            errors.append('Password must contain at least one lowercase letter')
+        if not re.search(r'[0-9]', password):
+            errors.append('Password must contain at least one digit')
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            errors.append('Password must contain at least one special character')
+    else:
+        errors.append('Password is required')
 
     return {
         'valid': len(errors) == 0,
