@@ -406,6 +406,6 @@ Search users by username, email, or name
 }
 ```
 
-## 10. Get User Statistics
-**GET** `localhost:5000/users/stats`
-Returns user statistics including total user count
+## 10. Get User Count
+**GET** `localhost:5000/users/count`
+Returns total user count
