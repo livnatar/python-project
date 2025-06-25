@@ -2,7 +2,13 @@ from datetime import datetime
 
 
 def validate_loan_data(data):
-    """Validate loan creation data"""
+    """
+    Validate data for creating a loan.
+
+    :param data: dict - Loan data including required and optional fields.
+    :return: dict - Validation result with 'valid' bool and list of 'errors'.
+    """
+
     errors = []
 
     # Check if data is provided
@@ -59,7 +65,13 @@ def validate_loan_data(data):
 
 
 def validate_return_data(data):
-    """Validate book return data"""
+    """
+    Validate data for returning a book.
+
+    :param data: dict - Return data with optional fine and returned date.
+    :return: dict - Validation result with 'valid' bool and list of 'errors'.
+    """
+
     errors = []
 
     if not data:
@@ -95,7 +107,13 @@ def validate_return_data(data):
 
 
 def validate_renewal_data(data):
-    """Validate loan renewal data"""
+    """
+    Validate data for renewing a loan.
+
+    :param data: dict - Renewal data with optional renewal days and new due date.
+    :return: dict - Validation result with 'valid' bool and list of 'errors'.
+    """
+
     errors = []
 
     if not data:
@@ -129,7 +147,13 @@ def validate_renewal_data(data):
 
 
 def validate_loan_search_params(params):
-    """Validate loan search parameters"""
+    """
+    Validate parameters for searching loans with pagination and status filter.
+
+    :param params: dict - Search parameters including page, per_page, and status.
+    :return: dict - Validation result with 'valid' bool and list of 'errors'.
+    """
+
     errors = []
 
     # Validate page
@@ -163,7 +187,14 @@ def validate_loan_search_params(params):
 
 
 def validate_id_parameter(param_value, param_name):
-    """Validate a single ID parameter"""
+    """
+    Validate a single integer ID parameter ensuring it is positive.
+
+    :param param_value: any - The value to validate as an ID.
+    :param param_name: str - The name of the parameter (used in error messages).
+    :return: dict - Validation result with 'valid' bool and list of 'errors'.
+    """
+
     errors = []
 
     try:

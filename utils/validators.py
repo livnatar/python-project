@@ -3,7 +3,13 @@ from typing import Dict, Any
 
 
 def validate_genre_data(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Validate genre data"""
+    """
+    Validate genre data including name and optional description.
+
+    :param data: Dict[str, Any] - Genre data with 'name' and optional 'description'.
+    :return: Dict[str, Any] - Validation result with 'valid' boolean and list of 'errors'.
+    """
+
     errors = []
 
     # Check required fields
@@ -31,7 +37,13 @@ def validate_genre_data(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def validate_user_data(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Validate user data"""
+    """
+    Validate user data including username, email, name fields, password, and optional phone.
+
+    :param data: Dict[str, Any] - User data to validate.
+    :return: Dict[str, Any] - Validation result with 'valid' boolean and list of 'errors'.
+    """
+
     errors = []
 
     # Required fields
@@ -86,7 +98,13 @@ def validate_user_data(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def validate_book_data(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Validate book data"""
+    """
+    Validate book data including ISBN, title, author, genre IDs, publication details, and copies.
+
+    :param data: Dict[str, Any] - Book data to validate.
+    :return: Dict[str, Any] - Validation result with 'valid' boolean and list of 'errors'.
+    """
+
     errors = []
 
     # Required fields

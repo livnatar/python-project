@@ -8,8 +8,16 @@ logger = logging.getLogger(__name__)
 def create_response(success: bool, message: str, data: Any = None, errors: list = None,
                     status_code: int = 200) -> tuple:
     """
-    Create a standardized JSON response.
+    Create a standardized JSON HTTP response.
+
+    :param success: bool - Indicates if the request was successful.
+    :param message: str - A descriptive message about the response.
+    :param data: Any - Optional data to include in the response.
+    :param errors: list - Optional list of error messages.
+    :param status_code: int - HTTP status code for the response (default 200).
+    :return: tuple - A Flask JSON response tuple (response, status_code).
     """
+
     response = {
         'success': success,
         'message': message
@@ -23,8 +31,13 @@ def create_response(success: bool, message: str, data: Any = None, errors: list 
 
 def handle_exception(func_name: str, e: Exception) -> tuple:
     """
-    Handle exceptions with logging and return standardized error response.
+    Log an exception and return a standardized internal server error response.
+
+    :param func_name: str - Name of the function where the exception occurred.
+    :param e: Exception - The caught exception object.
+    :return: tuple - Flask JSON response tuple with error message and HTTP 500 status.
     """
+
     logger.error(f"Error in {func_name}: {e}")
     return create_response(
         success=False,
@@ -37,8 +50,15 @@ def handle_exception(func_name: str, e: Exception) -> tuple:
 def handle_service_result(result: Dict, data: Any = None, success_status: int = 200,
                           not_found_status: int = 404) -> tuple:
     """
-    Handle service layer results and return appropriate HTTP response.
+    Process service layer result dict and return appropriate HTTP JSON response.
+
+    :param result: Dict - Result dictionary from service layer containing 'success' and messages.
+    :param data: Any - Optional data to include if operation succeeded.
+    :param success_status: int - HTTP status code for success (default 200).
+    :param not_found_status: int - HTTP status code for 'not found' errors (default 404).
+    :return: tuple - Flask JSON response tuple with appropriate status and message.
     """
+
     if result['success']:
         return create_response(
             success=True,
@@ -62,8 +82,12 @@ def handle_service_result(result: Dict, data: Any = None, success_status: int = 
 
 def get_validated_json(required_fields: list[str] = None) -> tuple[dict, None] | tuple[None, tuple]:
     """
-    Validate JSON request data and check for required fields.
+    Parse and validate JSON request data, checking for required fields if provided.
+
+    :param required_fields: list[str] - Optional list of required keys that must be present and non-null.
+    :return: tuple - Either (data dict, None) if valid, or (None, error response tuple) if invalid.
     """
+
     data = request.get_json()
     if not data:
         return None, create_response(
