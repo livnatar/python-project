@@ -235,6 +235,9 @@ class BookService:
                 copies_available=book_data.get('copies_available', existing_book.copies_available)
             )
 
+            logger.info(f"Updated book data: {updated_book_data.to_dict()}")
+            logger.info(f"Genre IDs to be assigned: {genre_ids}")
+
             # Use transaction to ensure atomicity
             with get_db_connection() as conn:
                 try:
@@ -250,26 +253,23 @@ class BookService:
 
                         # Add new genre relationships
                         for genre_id in genre_ids:
-                            success = self.book_genre_repo.add_genre_to_book(
-                                book_id, genre_id, conn=conn
-                            )
+                            success = self.book_genre_repo.add_genre_to_book(book_id, genre_id, conn=conn)
                             if not success:
                                 raise Exception(f"Failed to add genre {genre_id} to book")
-
-                    # Commit happens automatically when exiting context manager
-
-                    # Get updated book with genres
-                    final_book = self.book_repo.get_by_id(book_id)
-
-                    return {
-                        'success': True,
-                        'data': final_book.to_dict(),
-                        'message': 'Book updated successfully'
-                    }
 
                 except Exception as db_error:
                     # Rollback happens automatically on exception
                     raise db_error
+
+            # Get updated book with genres
+            final_book = self.book_repo.get_by_id(book_id)
+
+            # Commit happens automatically when exiting context manager
+            return {
+                'success': True,
+                'data': final_book.to_dict(),
+                'message': 'Book updated successfully'
+            }
 
         except Exception as e:
             return self._handle_exception('update_book', e)
