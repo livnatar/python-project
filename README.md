@@ -1,5 +1,5 @@
 
-#### Livnat Arama, ID: 213005234 and Ophek Alon, ID: 209625896
+#### Livnat Arama - livnatar@edu.jmc.ac.il and Ophek Alon - ophekal@edu.jmc.ac.il
 
 # Library Management System
 
