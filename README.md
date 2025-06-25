@@ -1,7 +1,7 @@
 # Book API Endpoints Reference
 
 ## 1. Get All Books
-**GET** `localhost:5000/books`
+**GET** `localhost:5000/api/books`
 Returns all books with pagination and filtering options
 
 **Query params:**
@@ -11,15 +11,15 @@ Returns all books with pagination and filtering options
 - `?available_only=true`
 
 ## 2. Get Book by ID
-**GET** `localhost:5000/books/1`
+**GET** `localhost:5000/api/books/1`
 Returns specific book by ID
 
 ## 3. Get Book by ISBN
-**GET** `localhost:5000/books/isbn/9781234567890`
+**GET** `localhost:5000/api/books/isbn/9781234567890`
 Returns book by ISBN
 
 ## 4. Create Book
-**POST** `localhost:5000/books`
+**POST** `localhost:5000/api/books`
 **Body:**
 ```json
 {
@@ -37,7 +37,7 @@ Returns book by ISBN
 ```
 
 ## 5. Update Book
-**PUT** `localhost:5000/books/1`
+**PUT** `localhost:5000/api/books/1`
 **Body:**
 ```json
 {
@@ -55,22 +55,22 @@ Returns book by ISBN
 ```
 
 ## 6. Delete Book
-**DELETE** `localhost:5000/books/1`
+**DELETE** `localhost:5000/api/books/1`
 Deletes book by ID
 
 ## 7. Search Books
-**GET** `localhost:5000/books/search?q=gatsby`
+**GET** `localhost:5000/api/books/search?q=gatsby`
 **Query params:**
 - `?q=search_term` (required)
 - `&genre_id=1&genre_id=2` (optional)
 
 ## 8. Get Available Books
-**GET** `localhost:5000/books/available`
+**GET** `localhost:5000/api/books/available`
 **Query params:**
 - `?page=1&per_page=20`
 
 ## 9. Add Genre to Book
-**POST** `localhost:5000/books/1/genres`
+**POST** `localhost:5000/api/books/1/genres`
 **Body:**
 ```json
 {
@@ -79,7 +79,7 @@ Deletes book by ID
 ```
 
 ## 10. Remove Genre from Book
-**DELETE** `localhost:5000/books/1/genres/3`
+**DELETE** `localhost:5000/api/books/1/genres/3`
 Removes genre ID 3 from book ID 1
 
 # Data Export API Endpoints Reference
@@ -121,16 +121,16 @@ Exports all overdue loans to Excel file
 # External Book API Endpoints Reference
 
 ## 1. Get Book Languages
-**GET** `localhost:5000/external/languages`
+**GET** `localhost:5000/api/external/languages`
 Gets available languages for a book by title using Open Library API
 
 **Query params (required):**
 - `?title=book_title` - The title of the book to search for
 
 **Examples:**
-- `localhost:5000/external/languages?title=The Great Gatsby`
-- `localhost:5000/external/languages?title=Harry Potter`
-- `localhost:5000/external/languages?title=1984`
+- `localhost:5000/api/external/languages?title=The Great Gatsby`
+- `localhost:5000/api/external/languages?title=Harry Potter`
+- `localhost:5000/api/external/languages?title=1984`
 
 **Response:**
 ```json
@@ -141,16 +141,16 @@ Gets available languages for a book by title using Open Library API
 ```
 
 ## 2. Get Books by Same Author
-**GET** `localhost:5000/external/same-author`
+**GET** `localhost:5000/api/external/same-author`
 Gets other books by the same author using Open Library API
 
 **Query params (required):**
 - `?title=book_title` - The title of the book to find same-author books for
 
 **Examples:**
-- `localhost:5000/external/same-author?title=The Great Gatsby`
-- `localhost:5000/external/same-author?title=Harry Potter and the Philosopher's Stone`
-- `localhost:5000/external/same-author?title=To Kill a Mockingbird`
+- `localhost:5000/api/external/same-author?title=The Great Gatsby`
+- `localhost:5000/api/external/same-author?title=Harry Potter and the Philosopher's Stone`
+- `localhost:5000/api/external/same-author?title=To Kill a Mockingbird`
 
 **Response:**
 ```json
@@ -190,7 +190,7 @@ Gets other books by the same author using Open Library API
 # Genre API Endpoints Reference
 
 ## 1. Get All Genres
-**GET** `localhost:5000/genres`
+**GET** `localhost:5000/api/genres`
 Returns all genres with pagination and search options
 
 **Query params:**
@@ -198,15 +198,15 @@ Returns all genres with pagination and search options
 - `?search=fiction`
 
 ## 2. Get Genre by ID
-**GET** `localhost:5000/genres/1`
+**GET** `localhost:5000/api/genres/1`
 Returns specific genre by ID with book count
 
 ## 3. Get Genre by Name
-**GET** `localhost:5000/genres/Fiction`
+**GET** `localhost:5000/api/genres/Fiction`
 Returns genre ID and details by genre name
 
 ## 4. Create Genre
-**POST** `localhost:5000/genres`
+**POST** `localhost:5000/api/genres`
 **Body:**
 ```json
 {
@@ -216,7 +216,7 @@ Returns genre ID and details by genre name
 ```
 
 ## 5. Update Genre
-**PUT** `localhost:5000/genres/1`
+**PUT** `localhost:5000/api/genres/1`
 **Body:**
 ```json
 {
@@ -226,16 +226,16 @@ Returns genre ID and details by genre name
 ```
 
 ## 6. Delete Genre
-**DELETE** `localhost:5000/genres/1`
+**DELETE** `localhost:5000/api/genres/1`
 Deletes genre by ID (only if no books are associated)
 
 ## 7. Search Genres
-**GET** `localhost:5000/genres/search?q=fiction`
+**GET** `localhost:5000/api/genres/search?q=fiction`
 **Query params:**
 - `?q=search_term` (required)
 
 ## 8. Get Books in Genre
-**GET** `localhost:5000/genres/1/books`
+**GET** `localhost:5000/api/genres/1/books`
 Returns all books in a specific genre with pagination
 
 **Query params:**
@@ -244,7 +244,7 @@ Returns all books in a specific genre with pagination
 # Loan API Endpoints Reference
 
 ## 1. Get All Loans
-**GET** `localhost:5000/loans`
+**GET** `localhost:5000/api/loans`
 Returns all loans with pagination and optional status filtering
 
 **Query params:**
@@ -252,7 +252,7 @@ Returns all loans with pagination and optional status filtering
 - `?status=active` - Filter by status (active, returned, overdue)
 
 ## 2. Get Loan by ID
-**GET** `localhost:5000/loans/1`
+**GET** `localhost:5000/api/loans/1`
 Returns specific loan by ID with full details
 
 ## 3. Create Loan (Borrow Book)
@@ -266,7 +266,7 @@ Returns specific loan by ID with full details
 ```
 
 ## 4. Return Book
-**PUT** `localhost:5000/loans/1/return`
+**PUT** `localhost:5000/api/loans/1/return`
 **Body (optional):**
 ```json
 {
@@ -275,7 +275,7 @@ Returns specific loan by ID with full details
 ```
 
 ## 5. Renew Loan
-**PUT** `localhost:5000/loans/1/renew`
+**PUT** `localhost:5000/api/loans/1/renew`
 **Body (optional):**
 ```json
 {
@@ -284,51 +284,51 @@ Returns specific loan by ID with full details
 ```
 
 ## 6. Get Overdue Loans
-**GET** `localhost:5000/loans/overdue`
+**GET** `localhost:5000/api/loans/overdue`
 Returns all loans that are past their due date
 
 ## 7. Get User Loans
-**GET** `localhost:5000/loans/user/1`
+**GET** `localhost:5000/api/loans/user/1`
 Returns all loans for a specific user with pagination
 
 **Query params:**
 - `?page=1&per_page=20`
 
 ## 8. Get Book Loans
-**GET** `localhost:5000/loans/book/1`
+**GET** `localhost:5000/api/loans/book/1`
 Returns all loans for a specific book with pagination
 
 **Query params:**
 - `?page=1&per_page=20`
 
 ## 9. Get Loan Statistics
-**GET** `localhost:5000/loans/statistics`
+**GET** `localhost:5000/api/loans/statistics`
 Returns comprehensive loan statistics and metrics
 
 ## 10. Get User Active Loans
-**GET** `localhost:5000/loans/user/1/active`
+**GET** `localhost:5000/api/loans/user/1/active`
 Returns only active loans for a specific user
 
 ## 11. Get Current Book Loans
-**GET** `localhost:5000/loans/book/1/current`
+**GET** `localhost:5000/api/loans/book/1/current`
 Returns current active loans for a specific book
 
 ## 12. Delete Loan
-**DELETE** `localhost:5000/loans/1`
+**DELETE** `localhost:5000/api/loans/1`
 Deletes a loan record (admin operation)
 
 **Query params:**
 - `?force=true` - Force delete active loans (admin override)
 
 ## 13. Get Book Availability
-**GET** `localhost:5000/loans/book/1/availability`
+**GET** `localhost:5000/api/loans/book/1/availability`
 Returns detailed availability information for a book
 
 
 # User API Endpoints Reference
 
 ## 1. Create User
-**POST** `localhost:5000/users`
+**POST** `localhost:5000/api/users`
 **Body:**
 ```json
 {
@@ -344,11 +344,11 @@ Returns detailed availability information for a book
 ```
 
 ## 2. Get User by ID
-**GET** `localhost:5000/users/1`
+**GET** `localhost:5000/api/users/1`
 Returns specific user by ID with full details
 
 ## 3. Get All Users
-**GET** `localhost:5000/users`
+**GET** `localhost:5000/api/users`
 Returns all users with pagination and optional search
 
 **Query params:**
@@ -356,11 +356,11 @@ Returns all users with pagination and optional search
 - `?search=john` - Search by username, email, or name
 
 ## 4. Get User by Username
-**GET** `localhost:5000/users/username/john_doe`
+**GET** `localhost:5000/api/users/username/john_doe`
 Returns user by username
 
 ## 5. Update User
-**PUT** `localhost:5000/users/1`
+**PUT** `localhost:5000/api/users/1`
 **Body:**
 ```json
 {
@@ -375,7 +375,7 @@ Returns user by username
 ```
 
 ## 6. Update User Password
-**PUT** `localhost:5000/users/1/password`
+**PUT** `localhost:5000/api/users/1/password`
 **Body:**
 ```json
 {
@@ -385,11 +385,11 @@ Returns user by username
 ```
 
 ## 7. Delete User
-**DELETE** `localhost:5000/users/1`
+**DELETE** `localhost:5000/api/users/1`
 Deletes user by ID
 
 ## 8. Search Users
-**GET** `localhost:5000/users/search?q=john`
+**GET** `localhost:5000/api/users/search?q=john`
 Search users by username, email, or name
 
 **Query params:**
@@ -397,7 +397,7 @@ Search users by username, email, or name
 - `?page=1&per_page=20`
 
 ## 9. Authenticate User
-**POST** `localhost:5000/users/authenticate`
+**POST** `localhost:5000/api/users/authenticate`
 **Body:**
 ```json
 {
@@ -407,5 +407,5 @@ Search users by username, email, or name
 ```
 
 ## 10. Get User Count
-**GET** `localhost:5000/users/count`
+**GET** `localhost:5000/api/users/count`
 Returns total user count
