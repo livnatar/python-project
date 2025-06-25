@@ -3,12 +3,6 @@ from flask_cors import CORS
 from config import Config
 import logging
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-
 # Import routes
 from routes.genre_routes import genre_bp
 from routes.book_routes import book_bp
@@ -16,6 +10,13 @@ from routes.user_routes import user_bp
 from routes.loan_routes import loan_bp
 from routes.external_routes import external_bp
 from routes.data_routes import data_bp
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
 
 def create_app(config_class=Config):
     """
@@ -41,7 +42,7 @@ def create_app(config_class=Config):
     @app.route('/')
     def index():
         """
-        Root endpoint providing API basic info and available endpoints.
+        Root endpoint providing API basic info.
         :return: JSON response with API message, version, status, and endpoints.
         """
 
@@ -49,13 +50,6 @@ def create_app(config_class=Config):
             'message': 'Library Management System API',
             'version': '1.0',
             'status': 'Running',
-            'available_endpoints': {
-                'genres': '/api/genres',
-                'books': '/api/books',
-                'users': '/api/users',
-                'loans': '/api/loans',
-                'health': '/health'
-            }
         })
 
     # Health check endpoint (test DB connection here, not on startup)

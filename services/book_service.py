@@ -9,7 +9,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class BookService:
     """
     Service class for managing book operations including creation, updating,
