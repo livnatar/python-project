@@ -12,7 +12,11 @@ book_service = BookService()
 
 @book_bp.route('', methods=['GET'])
 def get_books():
-    """Get all books with optional filtering, search, and pagination"""
+    """
+    This endpoint retrieves a paginated list of books with optional filters.
+    :return: A response containing a list of books or an error message.
+    """
+
     try:
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 20, type=int)
@@ -34,7 +38,12 @@ def get_books():
 
 @book_bp.route('/<int:book_id>', methods=['GET'])
 def get_book(book_id: int):
-    """Get a specific book by ID"""
+    """
+    This endpoint retrieves a book by its ID.
+    :param book_id: The ID of the book to retrieve
+    :return: A response containing the book details or an error message if not found.
+    """
+
     try:
         result = book_service.get_book_by_id(book_id)
         return handle_service_result(result)
@@ -44,7 +53,11 @@ def get_book(book_id: int):
 
 @book_bp.route('/isbn/<isbn>', methods=['GET'])
 def get_book_by_isbn(isbn: str):
-    """Get a specific book by ISBN"""
+    """
+    This endpoint retrieves a book by its ISBN.
+    :param isbn: The ISBN of the book to retrieve
+    :return: A response containing the book details or an error message if not found.
+    """
     try:
         result = book_service.get_book_by_isbn(isbn)
         return handle_service_result(result)
@@ -54,7 +67,10 @@ def get_book_by_isbn(isbn: str):
 
 @book_bp.route('', methods=['POST'])
 def create_book():
-    """Create a new book"""
+    """
+    This endpoint creates a new book.
+    :return: A response indicating success or failure of the book creation.
+    """""
     try:
         data, error = get_validated_json()
         if error:
@@ -68,7 +84,11 @@ def create_book():
 
 @book_bp.route('/<int:book_id>', methods=['PUT'])
 def update_book(book_id: int):
-    """Update an existing book"""
+    """
+    This endpoint updates an existing book.
+    :param book_id: The ID of the book to update
+    :return: A response indicating success or failure of the book update.
+    """
     try:
         data, error = get_validated_json()
         if error:
@@ -82,7 +102,11 @@ def update_book(book_id: int):
 
 @book_bp.route('/<int:book_id>', methods=['DELETE'])
 def delete_book(book_id: int):
-    """Delete a book"""
+    """
+    This endpoint deletes a book by its ID.
+    :param book_id: The ID of the book to delete
+    :return: A response indicating success or failure of the book deletion.
+    """
     try:
         result = book_service.delete_book(book_id)
         return handle_service_result(result)
@@ -92,7 +116,10 @@ def delete_book(book_id: int):
 
 @book_bp.route('/search', methods=['GET'])
 def search_books():
-    """Search books by title, author, or ISBN"""
+    """
+    This endpoint searches for books based on a search term and optional genre filters.
+    :return: A response containing a list of books matching the search criteria or an error message.
+    """
     try:
         search_term = request.args.get('q', '').strip()
         if not search_term:
@@ -112,7 +139,10 @@ def search_books():
 
 @book_bp.route('/available', methods=['GET'])
 def get_available_books():
-    """Get all currently available books"""
+    """
+    This endpoint retrieves a paginated list of available books.
+    :return: A response containing a list of available books or an error message.
+    """
     try:
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 20, type=int)
@@ -125,7 +155,11 @@ def get_available_books():
 
 @book_bp.route('/<int:book_id>/genres', methods=['POST'])
 def add_genre_to_book(book_id: int):
-    """Add a genre to a book"""
+    """
+    This endpoint adds a genre to a book.
+    :param book_id: The ID of the book to which the genre will be added
+    :return: A response indicating success or failure of the genre addition.
+    """
     try:
         data, error = get_validated_json(['genre_id'])
         if error:
@@ -139,7 +173,12 @@ def add_genre_to_book(book_id: int):
 
 @book_bp.route('/<int:book_id>/genres/<int:genre_id>', methods=['DELETE'])
 def remove_genre_from_book(book_id: int, genre_id: int):
-    """Remove a genre from a book"""
+    """
+    This endpoint removes a genre from a book.
+    :param book_id: The ID of the book from which the genre will be removed
+    :param genre_id: The ID of the genre to remove from the book
+    :return: A response indicating success or failure of the genre removal.
+    """
     try:
         result = book_service.remove_genre_from_book(book_id, genre_id)
         return handle_service_result(result)

@@ -7,12 +7,14 @@ logger = logging.getLogger(__name__)
 genre_bp = Blueprint('genres', __name__)
 genre_service = GenreService()
 
-# ========== ROUTES ==========
-
 
 @genre_bp.route('', methods=['GET'])
 def get_genres():
-    """Get all genres with optional search and pagination"""
+    """
+    Get all genres with optional search and pagination
+    :return: A response containing a list of genres or an error message.
+    """
+
     try:
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 20, type=int)
@@ -26,7 +28,12 @@ def get_genres():
 
 @genre_bp.route('/<int:genre_id>', methods=['GET'])
 def get_genre(genre_id: int):
-    """Get a specific genre by ID"""
+    """
+    Get a specific genre by ID
+    :param genre_id: The ID of the genre to retrieve
+    :return: A response containing the genre details or an error message if not found.
+    """
+
     try:
         result = genre_service.get_genre_by_id(genre_id)
         return handle_service_result(result)
@@ -36,7 +43,12 @@ def get_genre(genre_id: int):
 
 @genre_bp.route('/<string:genre_name>', methods=['GET'])
 def get_genre_id(genre_name: str):
-    """Get a specific ID by genre name"""
+    """
+    Get a specific ID by genre name
+    :param genre_name: The name of the genre to retrieve the ID for
+    :return: A response containing the genre ID or an error message if not found.
+    """
+
     try:
         result = genre_service.get_id_by_genre(genre_name)
         return handle_service_result(result)
@@ -46,7 +58,11 @@ def get_genre_id(genre_name: str):
 
 @genre_bp.route('', methods=['POST'])
 def create_genre():
-    """Create a new genre"""
+    """
+    Create a new genre
+    :return: A response containing the created genre or an error message.
+    """
+
     try:
         data, error = get_validated_json()
         if error:
@@ -60,7 +76,12 @@ def create_genre():
 
 @genre_bp.route('/<int:genre_id>', methods=['PUT'])
 def update_genre(genre_id: int):
-    """Update an existing genre"""
+    """
+    Update an existing genre
+    :param genre_id: The ID of the genre to update
+    :return: A response indicating success or failure of the update.
+    """
+
     try:
         data, error = get_validated_json()
         if error:
@@ -74,7 +95,12 @@ def update_genre(genre_id: int):
 
 @genre_bp.route('/<int:genre_id>', methods=['DELETE'])
 def delete_genre(genre_id: int):
-    """Delete a genre"""
+    """
+    Delete a genre
+    :param genre_id: The ID of the genre to delete
+    :return: A response indicating success or failure of the deletion.
+    """
+
     try:
         result = genre_service.delete_genre(genre_id)
         return handle_service_result(result)
@@ -84,7 +110,11 @@ def delete_genre(genre_id: int):
 
 @genre_bp.route('/search', methods=['GET'])
 def search_genres():
-    """Search genres by name or description"""
+    """
+    Search genres by name or description
+    :return: A response containing a list of matching genres or an error message.
+    """
+
     try:
         search_term = request.args.get('q', '').strip()
         if not search_term:
@@ -103,7 +133,12 @@ def search_genres():
 
 @genre_bp.route('/<int:genre_id>/books', methods=['GET'])
 def get_books_in_genre(genre_id: int):
-    """Get all books in a specific genre"""
+    """
+    Get all books in a specific genre
+    :param genre_id: The ID of the genre to retrieve books for
+    :return: A response containing a list of books in the genre or an error message.
+    """
+
     try:
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 20, type=int)

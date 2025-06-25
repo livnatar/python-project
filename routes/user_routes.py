@@ -10,11 +10,13 @@ user_bp = Blueprint('users', __name__)
 user_service = UserService()
 
 
-# ========== ROUTES ==========
-
-
 @user_bp.route('', methods=['POST'])
 def create_user():
+    """
+    This endpoint creates a new user.
+    :return: A response containing the created user data or an error message.
+    """
+
     try:
         data, error = get_validated_json()
         if error:
@@ -28,6 +30,11 @@ def create_user():
 
 @user_bp.route('/<int:user_id>', methods=['GET'])
 def get_user(user_id: int):
+    """
+    This endpoint retrieves a user by their ID.
+    :param user_id: The ID of the user to retrieve
+    :return: A response containing the user data or an error message if not found.
+    """
     try:
         user, result = user_service.get_user_by_id(user_id)
         data = user.to_dict() if user else None
@@ -38,6 +45,10 @@ def get_user(user_id: int):
 
 @user_bp.route('', methods=['GET'])
 def get_all_users():
+    """
+    This endpoint retrieves all users with optional search and pagination.
+    :return: A response containing a list of users or an error message.
+    """
     try:
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 20, type=int)
@@ -61,6 +72,11 @@ def get_all_users():
 
 @user_bp.route('/username/<username>', methods=['GET'])
 def get_user_by_username(username: str):
+    """
+    This endpoint retrieves a user by their username.
+    :param username: The username of the user to retrieve
+    :return: A response containing the user data or an error message if not found.
+    """
     try:
         user, result = user_service.get_user_by_username(username)
         data = user.to_dict() if user else None
@@ -71,6 +87,11 @@ def get_user_by_username(username: str):
 
 @user_bp.route('/<int:user_id>', methods=['PUT'])
 def update_user(user_id: int):
+    """
+    This endpoint updates an existing user.
+    :param user_id: The ID of the user to update
+    :return: A response containing the updated user data or an error message.
+    """
     try:
         data, error = get_validated_json()
         if error:
@@ -84,6 +105,11 @@ def update_user(user_id: int):
 
 @user_bp.route('/<int:user_id>/password', methods=['PUT'])
 def update_user_password(user_id: int):
+    """
+    This endpoint updates the password for an existing user.
+    :param user_id: The ID of the user whose password is to be updated
+    :return: A response indicating success or failure of the password update.
+    """
     try:
         data, error = get_validated_json(['current_password', 'new_password'])
         if error:
@@ -101,6 +127,11 @@ def update_user_password(user_id: int):
 
 @user_bp.route('/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id: int):
+    """
+    This endpoint deletes a user by their ID.
+    :param user_id: The ID of the user to delete
+    :return: A response indicating success or failure of the deletion.
+    """
     try:
         success, result = user_service.delete_user(user_id)
         return handle_service_result(result)
@@ -110,6 +141,10 @@ def delete_user(user_id: int):
 
 @user_bp.route('/search', methods=['GET'])
 def search_users():
+    """
+    This endpoint searches for users based on a query parameter.
+    :return: A response containing a list of users matching the search term or an error message.
+    """
     try:
         search_term = request.args.get('q', '').strip()
         page = request.args.get('page', 1, type=int)
@@ -136,6 +171,10 @@ def search_users():
 
 @user_bp.route('/authenticate', methods=['POST'])
 def authenticate_user():
+    """
+    This endpoint authenticates a user with their username and password.
+    :return: A response containing the authenticated user data or an error message.
+    """
     try:
         data, error = get_validated_json(['username', 'password'])
         if error:
@@ -148,15 +187,19 @@ def authenticate_user():
         return handle_exception('authenticate_user', e)
 
 
-@user_bp.route('/stats', methods=['GET'])
-def get_user_stats():
+@user_bp.route('/count', methods=['GET'])
+def get_user_count():
+    """
+    This endpoint retrieves the total number of users in the system.
+    :return: A response containing the total user count or an error message.
+    """
     try:
         repo = UserRepository()
         total_users = repo.get_count()
         return create_response(
             success=True,
-            message='User statistics retrieved',
+            message='User count retrieved',
             data={'total_users': total_users}
         )
     except Exception as e:
-        return handle_exception('get_user_stats', e)
+        return handle_exception('get_user_count', e)

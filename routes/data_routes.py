@@ -9,7 +9,14 @@ data_service = DataService()
 
 
 def _handle_export_route(export_function, *args, **kwargs):
-    """Generic handler for all export routes"""
+    """
+    Generic handler for export routes to manage file generation and response.
+    :param export_function: The function that performs the export logic.
+    :param args: The positional arguments to pass to the export function.
+    :param kwargs: The keyword arguments to pass to the export function.
+    :return: A Flask response with the generated file or an error message.
+    """
+
     try:
         result = export_function(*args, **kwargs)
 
@@ -31,7 +38,11 @@ def _handle_export_route(export_function, *args, **kwargs):
 
 @data_bp.route('/export/user-loans/<username>', methods=['GET'])
 def export_user_loans(username):
-    """Export user loans to Excel"""
+    """
+    Export loans for a specific user to Excel.
+    :param username: The username of the user whose loans are to be exported.
+    :return: A response with the generated Excel file or an error message.
+    """
     if not username.strip():
         return jsonify({'error': 'Username required'}), 400
 
@@ -43,7 +54,10 @@ def export_user_loans(username):
 
 @data_bp.route('/export/all-loans', methods=['GET'])
 def export_all_loans():
-    """Export all loans to Excel"""
+    """
+    Export all loans to Excel with optional status filter.
+    :return: A response with the generated Excel file or an error message.
+    """
     status = request.args.get('status')
 
     # Validate status parameter if provided
@@ -62,7 +76,10 @@ def export_all_loans():
 
 @data_bp.route('/export/overdue-loans', methods=['GET'])
 def export_overdue_loans():
-    """Export overdue loans to Excel"""
+    """
+    Export all overdue loans to Excel.
+    :return: A response with the generated Excel file or an error message.
+    """
     return _handle_export_route(
         data_service.export_overdue_loans_to_excel
     )

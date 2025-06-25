@@ -6,6 +6,10 @@ external_bp = Blueprint('external', __name__)
 
 @external_bp.route('/languages', methods=['GET'])
 def get_languages():
+    """
+    This endpoint retrieves the languages of a book by its title.
+    :return: A JSON response containing the languages of the book or an error message.
+    """
     try:
         title = request.args.get('title')
         if not title:
@@ -22,6 +26,10 @@ def get_languages():
 
 @external_bp.route('/same-author', methods=['GET'])
 def get_similar_books():
+    """
+    This endpoint retrieves books by the same author based on the title of a book.
+    :return: A JSON response containing books by the same author or an error message.
+    """
     try:
         title = request.args.get('title')
         if not title:
