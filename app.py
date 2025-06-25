@@ -17,10 +17,14 @@ from routes.loan_routes import loan_bp
 from routes.external_routes import external_bp
 from routes.data_routes import data_bp
 
-# Other routes will be imported as we create them
-# from routes.reservation_routes import reservation_bp
-
 def create_app(config_class=Config):
+    """
+    Create and configure the Flask application with all routes, blueprints, and error handlers.
+
+    :param config_class: Config - Configuration class to load app settings from.
+    :return: Flask app instance - The configured Flask application.
+    """
+
     app = Flask(__name__)
     CORS(app)  # Add CORS like your working project
     app.config.from_object(config_class)
@@ -33,12 +37,14 @@ def create_app(config_class=Config):
     app.register_blueprint(external_bp, url_prefix='/api/external')
     app.register_blueprint(data_bp, url_prefix='/data')
 
-    # Other blueprints will be registered as we create them
-    # app.register_blueprint(reservation_bp, url_prefix='/api/reservations')
-
     # Root endpoint
     @app.route('/')
     def index():
+        """
+        Root endpoint providing API basic info and available endpoints.
+        :return: JSON response with API message, version, status, and endpoints.
+        """
+
         return jsonify({
             'message': 'Library Management System API',
             'version': '1.0',
@@ -46,6 +52,8 @@ def create_app(config_class=Config):
             'available_endpoints': {
                 'genres': '/api/genres',
                 'books': '/api/books',
+                'users': '/api/users',
+                'loans': '/api/loans',
                 'health': '/health'
             }
         })
@@ -53,6 +61,11 @@ def create_app(config_class=Config):
     # Health check endpoint (test DB connection here, not on startup)
     @app.route('/health')
     def health_check():
+        """
+        Health check endpoint to verify database connection status.
+        :return: JSON response indicating API and database health status.
+        """
+
         try:
             from models.database import test_connection
             db_status = 'connected' if test_connection() else 'disconnected'
@@ -71,14 +84,29 @@ def create_app(config_class=Config):
     # Error handlers
     @app.errorhandler(404)
     def not_found(error):
+        """
+        Handle 404 errors for resource not found.
+        :param error: The error raised.
+        :return: JSON response with error message and 404 status.
+        """
         return jsonify({'error': 'Resource not found'}), 404
 
     @app.errorhandler(400)
     def bad_request(error):
+        """
+        Handle 400 errors for bad requests.
+        :param error: The error raised.
+        :return: JSON response with error message and 400 status.
+        """
         return jsonify({'error': 'Bad request'}), 400
 
     @app.errorhandler(500)
     def internal_error(error):
+        """
+        Handle 500 errors for internal server errors.
+        :param error: The error raised.
+        :return: JSON response with error message and 500 status.
+        """
         return jsonify({'error': 'Internal server error'}), 500
 
     return app
