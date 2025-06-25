@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 
 def validate_genre_data(data: Dict[str, Any]) -> Dict[str, Any]:

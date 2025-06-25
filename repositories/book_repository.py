@@ -1,5 +1,5 @@
-from typing import List, Optional, Dict, Any
-from models.database import get_db_connection, execute_query, execute_single_query
+from typing import List, Optional
+from models.database import execute_query, execute_single_query
 from models.book_model import Book
 from repositories.book_genre_repository import BookGenreRepository
 import logging

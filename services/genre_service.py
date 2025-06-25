@@ -1,5 +1,3 @@
-
-# services/genre_service.py
 from typing import List, Optional, Dict, Any, Tuple
 from repositories.genre_repository import GenreRepository
 from repositories.book_genre_repository import BookGenreRepository

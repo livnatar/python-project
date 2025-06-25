@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Any, Tuple, Callable
+from typing import List, Optional, Dict, Any, Tuple
 import logging
 from models.user_model import User
 from repositories.user_repository import UserRepository

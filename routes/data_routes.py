@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify, send_file
 from services.data_service import DataService
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
