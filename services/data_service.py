@@ -13,13 +13,25 @@ class DataService:
     def __init__(self):
         self.loan_service = LoanService()
 
-    def _handle_exception(self, operation: str, error: Exception) -> Dict[str, Any]:
-        """Handle all exceptions consistently"""
+    @staticmethod
+    def _handle_exception(operation: str, error: Exception) -> Dict[str, Any]:
+        """
+        Handle all exceptions consistently
+        :param operation: Name of the operation being performed
+        :param error: Exception that occurred
+        :return: Dictionary with error information
+        """
         logger.error(f"Error in {operation}: {error}")
         return {'success': False, 'error': 'Export failed'}
 
-    def _create_temp_excel_file(self, filename_prefix: str) -> str:
-        """Create Excel file in data directory"""
+    @staticmethod
+    def _create_temp_excel_file(filename_prefix: str) -> str:
+        """
+        Create Excel file in data directory
+        :param filename_prefix: Prefix for the filename
+        :return: Full path to the created Excel file
+        """
+
         # Create data directory if it doesn't exist
         data_dir = os.path.join(os.getcwd(), 'data')
         os.makedirs(data_dir, exist_ok=True)
@@ -28,8 +40,14 @@ class DataService:
         filename = f"{filename_prefix}_{timestamp}.xlsx"
         return os.path.join(data_dir, filename)
 
-    def _loans_to_dataframe(self, enriched_loans: List[Dict]) -> pd.DataFrame:
-        """Convert enriched loan data to pandas DataFrame"""
+    @staticmethod
+    def _loans_to_dataframe(enriched_loans: List[Dict]) -> pd.DataFrame:
+        """
+        Convert enriched loan data to pandas DataFrame
+        :param enriched_loans: List of enriched loan dictionaries
+        :return: DataFrame with loan data
+        """
+
         if not enriched_loans:
             return pd.DataFrame()
 
@@ -48,7 +66,15 @@ class DataService:
 
     def _create_excel_result(self, df: pd.DataFrame, filename_prefix: str,
                              data_count: int, extra_data: Dict = None) -> Dict[str, Any]:
-        """Create Excel file"""
+        """
+        Create Excel file
+        :param df: DataFrame with loan data
+        :param filename_prefix: Prefix for the filename
+        :param data_count: Number of loans in the data
+        :param extra_data: Additional data to include in the result
+        :return: Dictionary with result information
+        """
+
         file_path = self._create_temp_excel_file(filename_prefix)
 
         # Simple Excel export - pandas handles everything
@@ -69,7 +95,17 @@ class DataService:
     def _export_loans(self, service_method: Callable, method_args: tuple,
                       filename_prefix: str, error_message: str,
                       data_key: str = 'data', extra_data_keys: List[str] = None) -> Dict[str, Any]:
-        """Generic export method for all loan exports"""
+        """
+        Generic export method for all loan exports
+        :param service_method: Service method to call
+        :param method_args: Arguments to pass to the service method
+        :param filename_prefix: Prefix for the output filename
+        :param error_message: Error message if no loans found
+        :param data_key: Key to extract loan data from the result
+        :param extra_data_keys: Additional keys to extract from the result
+        :return: Dictionary with result information
+        """
+
         try:
             # Call the service method
             result = service_method(*method_args)
@@ -101,7 +137,12 @@ class DataService:
             return self._handle_exception(f'export_{filename_prefix}', e)
 
     def export_user_loans_to_excel(self, username: str, **kwargs) -> Dict[str, Any]:
-        """Export user loans to Excel"""
+        """
+        Export user loans to Excel
+        :param username: Username of the user whose loans to export
+        :return: Dictionary with result information
+        """
+
         # Get user first
         user = self.loan_service.user_repo.get_by_username(username)
         if not user:
@@ -115,7 +156,12 @@ class DataService:
         )
 
     def export_all_loans_to_excel(self, status_filter: str = None, **kwargs) -> Dict[str, Any]:
-        """Export all loans to Excel"""
+        """
+        Export all loans to Excel
+        :param status_filter: Optional filter for loan status (e.g., 'active', 'overdue')
+        :return: Dictionary with result information
+        """
+
         suffix = f"_{status_filter}" if status_filter else "_all"
         return self._export_loans(
             service_method=self.loan_service.get_all_loans,
@@ -125,7 +171,11 @@ class DataService:
         )
 
     def export_overdue_loans_to_excel(self, **kwargs) -> Dict[str, Any]:
-        """Export overdue loans to Excel"""
+        """
+        Export overdue loans to Excel
+        :return: Dictionary with result information
+        """
+
         return self._export_loans(
             service_method=self.loan_service.get_overdue_loans,
             method_args=(),

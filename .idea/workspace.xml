@@ -4,14 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="add documentation to repositories directory">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/book_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/book_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/data_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/data_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/external_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/external_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/genre_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/genre_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/loan_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/loan_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user_routes.py" afterDir="false" />
+    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="add documentation to routes directory">
+      <change beforePath="$PROJECT_DIR$/services/book_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/book_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -222,7 +216,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750837802331</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="add documentation to routes directory">
+      <option name="closed" value="true" />
+      <created>1750846579994</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1750846579994</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -242,6 +244,7 @@
     <MESSAGE value="add requirements and delete unused library" />
     <MESSAGE value="add documentation to models directory" />
     <MESSAGE value="add documentation to repositories directory" />
-    <option name="LAST_COMMIT_MESSAGE" value="add documentation to repositories directory" />
+    <MESSAGE value="add documentation to routes directory" />
+    <option name="LAST_COMMIT_MESSAGE" value="add documentation to routes directory" />
   </component>
 </project>

@@ -11,26 +11,50 @@ logger = logging.getLogger(__name__)
 
 
 class BookService:
+    """
+    Service class for managing book operations including creation, updating,
+    retrieval, deletion, and genre management.
+    """
 
     def __init__(self):
+        """
+        Initialize the BookService with repositories for books, genres, and book-genre relationships.
+        """
         self.book_repo = BookRepository()
         self.genre_repo = GenreRepository()
         self.book_genre_repo = BookGenreRepository()
 
-    def _validate_book_id(self, book_id: int) -> Optional[str]:
-        """Validate book ID format"""
+    @staticmethod
+    def _validate_book_id(book_id: int) -> Optional[str]:
+        """
+        Validate book ID format
+        :param book_id: ID of the book to validate
+        :return: None if valid, error message if invalid
+        """
+
         if not isinstance(book_id, int) or book_id <= 0:
             return 'Invalid book ID'
         return None
 
-    def _validate_genre_id(self, genre_id: int) -> Optional[str]:
-        """Validate genre ID format"""
+    @staticmethod
+    def _validate_genre_id(genre_id: int) -> Optional[str]:
+        """
+        Validate genre ID format
+        :param genre_id: ID of the genre to validate
+        :return: None if valid, error message if invalid
+        """
+
         if not isinstance(genre_id, int) or genre_id <= 0:
             return 'Invalid genre ID'
         return None
 
     def _validate_genres_exist(self, genre_ids: List[int]) -> Optional[str]:
-        """Validate that all genre IDs exist in database"""
+        """
+        Validate that all genre IDs exist in database
+        :param genre_ids: List of genre IDs to validate
+        :return: None if all exist, error message if any do not exist
+        """
+
         if not genre_ids:
             return None
 
@@ -40,8 +64,15 @@ class BookService:
                 return f'Genre with ID {genre_id} does not exist'
         return None
 
-    def _handle_exception(self, operation: str, error: Exception) -> Dict[str, Any]:
-        """Handle exceptions consistently"""
+    @staticmethod
+    def _handle_exception(operation: str, error: Exception) -> Dict[str, Any]:
+        """
+        Handle exceptions consistently
+        :param operation: Name of the operation being performed
+        :param error: Exception that occurred
+        :return: Dictionary with error details
+        """
+
         logger.error(f"Error in {operation}: {error}")
 
         # Handle specific constraint errors
@@ -58,7 +89,12 @@ class BookService:
         }
 
     def create_book(self, book_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Create a new book with genres using proper transaction management"""
+        """
+        Create a new book with genres using proper transaction management
+        :param book_data: Dictionary containing book details
+        :return: Dictionary with success status and created book data or error message
+        """
+
         try:
             # Validate input data
             validation_result = validate_book_data(book_data)
@@ -145,7 +181,13 @@ class BookService:
             return self._handle_exception('create_book', e)
 
     def update_book(self, book_id: int, book_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Update an existing book including genres using proper transaction management"""
+        """
+        Update an existing book including genres using proper transaction management
+        :param book_id: ID of the book to update
+        :param book_data: Dictionary containing updated book details
+        :return: Dictionary with success status and updated book data or error message
+        """
+
         try:
             # Validate book ID
             book_id_error = self._validate_book_id(book_id)
@@ -233,7 +275,12 @@ class BookService:
             return self._handle_exception('update_book', e)
 
     def get_book_by_id(self, book_id: int) -> Dict[str, Any]:
-        """Get book by ID with genres"""
+        """
+        Get book by ID with genres
+        :param book_id: ID of the book to retrieve
+        :return: Dictionary with success status and book data or error message
+        """
+
         try:
             book_id_error = self._validate_book_id(book_id)
             if book_id_error:
@@ -249,7 +296,12 @@ class BookService:
             return self._handle_exception('get_book_by_id', e)
 
     def get_book_by_isbn(self, isbn: str) -> Dict[str, Any]:
-        """Get book by ISBN with genres"""
+        """
+        Get book by ISBN with genres
+        :param isbn: ISBN of the book to retrieve
+        :return: Dictionary with success status and book data or error message
+        """
+
         try:
             if not isbn or not isbn.strip():
                 return {'success': False, 'error': 'ISBN is required'}
@@ -265,7 +317,16 @@ class BookService:
 
     def get_all_books(self, page: int = 1, per_page: int = 20, search: str = None,
                       genre_id: int = None, available_only: bool = False) -> Dict[str, Any]:
-        """Get all books with pagination, search, and filtering"""
+        """
+        Get all books with pagination, search, and filtering
+        :param page: Page number for pagination
+        :param per_page: Number of books per page
+        :param search: Search term for book title, author, or ISBN
+        :param genre_id: Filter by genre ID
+        :param available_only: Whether to return only available books
+        :return: Dictionary with success status, book data, pagination info, and filters
+        """
+
         try:
             if page < 1:
                 page = 1
@@ -308,7 +369,12 @@ class BookService:
             return self._handle_exception('get_all_books', e)
 
     def delete_book(self, book_id: int) -> Dict[str, Any]:
-        """Delete a book"""
+        """
+        Delete a book
+        :param book_id: ID of the book to delete
+        :return: Dictionary with success status and message or error
+        """
+
         try:
             book_id_error = self._validate_book_id(book_id)
             if book_id_error:
@@ -330,7 +396,13 @@ class BookService:
             return self._handle_exception('delete_book', e)
 
     def search_books(self, search_term: str, genre_ids: List[int] = None) -> Dict[str, Any]:
-        """Search books by title, author, or ISBN"""
+        """
+        Search books by title, author, or ISBN
+        :param search_term: Search term to filter books
+        :param genre_ids: Optional list of genre IDs to filter results
+        :return: Dictionary with success status, book data, search term, and genre filter
+        """
+
         try:
             if not search_term or not search_term.strip():
                 return {'success': False, 'error': 'Search term is required'}
@@ -347,7 +419,13 @@ class BookService:
             return self._handle_exception('search_books', e)
 
     def add_genre_to_book(self, book_id: int, genre_id: int) -> Dict[str, Any]:
-        """Add a genre to a book"""
+        """
+        Add a genre to a book
+        :param book_id: ID of the book to add genre to
+        :param genre_id: ID of the genre to add
+        :return: Dictionary with success status, updated book data, or error message
+        """
+
         try:
             book_id_error = self._validate_book_id(book_id)
             if book_id_error:
@@ -394,7 +472,13 @@ class BookService:
             return self._handle_exception('add_genre_to_book', e)
 
     def remove_genre_from_book(self, book_id: int, genre_id: int) -> Dict[str, Any]:
-        """Remove a genre from a book"""
+        """
+        Remove a genre from a book
+        :param book_id: ID of the book to remove genre from
+        :param genre_id: ID of the genre to remove
+        :return: Dictionary with success status, updated book data, or error message
+        """
+
         try:
             book_id_error = self._validate_book_id(book_id)
             if book_id_error:
@@ -441,7 +525,13 @@ class BookService:
             return self._handle_exception('remove_genre_from_book', e)
 
     def get_available_books(self, page: int = 1, per_page: int = 20) -> Dict[str, Any]:
-        """Get all currently available books"""
+        """
+        Get all currently available books
+        :param page: Page number for pagination
+        :param per_page: Number of books per page
+        :return: Dictionary with success status, book data, and pagination info
+        """
+
         try:
             if page < 1:
                 page = 1
