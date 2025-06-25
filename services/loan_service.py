@@ -11,32 +11,63 @@ logger = logging.getLogger(__name__)
 
 
 class LoanService:
+    """
+    Service layer responsible for handling the business logic related to book loans.
+    """
 
     def __init__(self):
+        """
+        Initialize the LoanService with required repositories.
+        """
         self.loan_repo = LoanRepository()
         self.user_repo = UserRepository()
         self.book_repo = BookRepository()
 
-    def _validate_loan_id(self, loan_id: int) -> Optional[str]:
-        """Validate loan ID format"""
+    @staticmethod
+    def _validate_loan_id(loan_id: int) -> Optional[str]:
+        """
+        Validate loan ID format.
+        :param loan_id: int - The loan ID to validate.
+        :return: Optional[str] - An error message if invalid, or None if valid.
+        """
+
         if not isinstance(loan_id, int) or loan_id <= 0:
             return 'Invalid loan ID'
         return None
 
-    def _validate_user_id(self, user_id: int) -> Optional[str]:
-        """Validate user ID format"""
+    @staticmethod
+    def _validate_user_id(user_id: int) -> Optional[str]:
+        """
+        Validate user ID format.
+        :param user_id: int - The user ID to validate.
+        :return: Optional[str] - An error message if invalid, or None if valid.
+        """
+
         if not isinstance(user_id, int) or user_id <= 0:
             return 'Invalid user ID'
         return None
 
-    def _validate_book_id(self, book_id: int) -> Optional[str]:
-        """Validate book ID format"""
+    @staticmethod
+    def _validate_book_id(book_id: int) -> Optional[str]:
+        """
+        Validate book ID format.
+        :param book_id: int - The book ID to validate.
+        :return: Optional[str] - An error message if invalid, or None if valid.
+        """
+
         if not isinstance(book_id, int) or book_id <= 0:
             return 'Invalid book ID'
         return None
 
-    def _validate_pagination(self, page: int, per_page: int) -> tuple[int, int]:
-        """Validate and normalize pagination parameters"""
+    @staticmethod
+    def _validate_pagination(page: int, per_page: int) -> tuple[int, int]:
+        """
+        Validate and normalize pagination parameters.
+        :param page: int - The page number.
+        :param per_page: int - The number of items per page.
+        :return: Tuple[int, int] - A tuple containing the validated (page, per_page) values.
+        """
+
         if page < 1:
             page = 1
         if per_page < 1 or per_page > 100:
@@ -44,28 +75,50 @@ class LoanService:
         return page, per_page
 
     def _check_user_exists(self, user_id: int) -> Optional[str]:
-        """Check if user exists and return error message if not"""
+        """
+        Check if a user exists by their ID.
+        :param user_id: int - The ID of the user.
+        :return: Optional[str] - An error message if the user doesn't exist, or None.
+        """
+
         user = self.user_repo.get_by_id(user_id)
         if not user:
             return 'User not found'
         return None
 
     def _check_book_exists(self, book_id: int) -> Optional[str]:
-        """Check if book exists and return error message if not"""
+        """
+        Check if a book exists by its ID.
+        :param book_id: int - The ID of the book.
+        :return: Optional[str] - An error message if the book doesn't exist, or None.
+        """
+
         book = self.book_repo.get_by_id(book_id)
         if not book:
             return 'Book not found'
         return None
 
     def _check_loan_exists_and_active(self, loan_id: int) -> tuple[Optional[Loan], Optional[str]]:
-        """Check if loan exists and is active, return loan and error message"""
+        """
+        Check if a loan exists and is active.
+        :param loan_id: int - The ID of the loan.
+        :return: Tuple[Optional[Loan], Optional[str]] - The loan object if found, or error message if not.
+        """
+
         loan = self.loan_repo.get_by_id(loan_id)
         if not loan:
             return None, 'Loan not found'
         return loan, None
 
-    def _handle_exception(self, operation: str, error: Exception) -> Dict[str, Any]:
-        """Handle exceptions consistently"""
+    @staticmethod
+    def _handle_exception(operation: str, error: Exception) -> Dict[str, Any]:
+        """
+        Handle exceptions consistently across all service methods.
+        :param operation: str - The name of the operation where the exception occurred.
+        :param error: Exception - The exception that was raised.
+        :return: Dict[str, Any] - A standardized error response dictionary.
+        """
+
         logger.error(f"Error in {operation}: {error}")
 
         # Handle specific constraint errors
@@ -81,8 +134,15 @@ class LoanService:
             'error': 'Internal server error'
         }
 
-    def _validate_input_data(self, data: Dict[str, Any], validation_func) -> Optional[Dict[str, Any]]:
-        """Generic input validation helper"""
+    @staticmethod
+    def _validate_input_data(data: Dict[str, Any], validation_func) -> Optional[Dict[str, Any]]:
+        """
+        Generic input validation helper for loan data.
+        :param data: Dict[str, Any] - The input data to validate.
+        :param validation_func: Callable - A function that returns a validation result.
+        :return: Optional[Dict[str, Any]] - None if valid, or an error response dictionary if not.
+        """
+
         validation_result = validation_func(data)
         if not validation_result['valid']:
             return {
@@ -93,7 +153,12 @@ class LoanService:
         return None
 
     def create_loan(self, loan_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Create a new loan (borrow a book) with atomic availability checking"""
+        """
+        Create a new loan (borrow a book), including all required validation and availability checks.
+        :param loan_data: Dict[str, Any] - A dictionary containing 'user_id', 'book_id', and optional 'loan_period_days'.
+        :return: Dict[str, Any] - A response indicating success or failure and loan details if created.
+        """
+
         try:
             # Validate input data
             validation_error = self._validate_input_data(loan_data, validate_loan_data)
@@ -161,7 +226,12 @@ class LoanService:
             return self._handle_exception('create_loan', e)
 
     def get_loan_by_id(self, loan_id: int) -> Dict[str, Any]:
-        """Get loan by ID with enriched data"""
+        """
+        Retrieve a specific loan by its ID, enriched with related data.
+        :param loan_id: int - The ID of the loan to retrieve.
+        :return: Dict[str, Any] - A result dictionary with loan details or error information.
+        """
+
         try:
             loan_id_error = self._validate_loan_id(loan_id)
             if loan_id_error:
@@ -180,7 +250,14 @@ class LoanService:
             return self._handle_exception('get_loan_by_id', e)
 
     def get_all_loans(self, page: int = 1, per_page: int = 20, status: str = None) -> Dict[str, Any]:
-        """Get all loans with pagination and filtering"""
+        """
+        Retrieve all loans with pagination and optional status filtering.
+        :param page: int - The page number to retrieve.
+        :param per_page: int - The number of items per page.
+        :param status: Optional[str] - Filter loans by status (e.g., 'active', 'returned').
+        :return: Dict[str, Any] - A result dictionary containing loan data, pagination, and filters.
+        """
+
         try:
             page, per_page = self._validate_pagination(page, per_page)
             offset = (page - 1) * per_page
@@ -209,7 +286,15 @@ class LoanService:
             return self._handle_exception('get_all_loans', e)
 
     def get_user_loans(self, user_id: int, page: int = 1, per_page: int = 20) -> Dict[str, Any]:
-        """Get all loans for a specific user"""
+        """
+        Retrieve all loan records for a specific user with pagination.
+
+        :param user_id: int - The ID of the user.
+        :param page: int - The page number to retrieve (default is 1).
+        :param per_page: int - Number of loans per page (default is 20).
+        :return: Dict[str, Any] - A dictionary with the user info, loan data, and pagination metadata.
+        """
+
         try:
             user_id_error = self._validate_user_id(user_id)
             if user_id_error:
@@ -247,7 +332,13 @@ class LoanService:
             return self._handle_exception('get_user_loans', e)
 
     def return_book(self, loan_id: int, return_data: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Return a book with atomic availability update"""
+        """
+        Mark a book as returned, optionally calculating and updating a fine if overdue.
+        :param loan_id: int - The ID of the loan to return.
+        :param return_data: Optional[Dict[str, Any]] - Data used for fine calculation (e.g., 'fine_per_day').
+        :return: Dict[str, Any] - A response dictionary with return result and updated loan info.
+        """
+
         try:
             loan_id_error = self._validate_loan_id(loan_id)
             if loan_id_error:
@@ -300,7 +391,14 @@ class LoanService:
             return self._handle_exception('return_book', e)
 
     def renew_loan(self, loan_id: int, renew_data: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Renew a loan"""
+        """
+        Renew an active loan by extending its due date.
+
+        :param loan_id: int - The ID of the loan to renew.
+        :param renew_data: Optional[Dict[str, Any]] - Data for renewal (e.g., 'renewal_days').
+        :return: Dict[str, Any] - A response dictionary with renewal result and new due date.
+        """
+
         try:
             loan_id_error = self._validate_loan_id(loan_id)
             if loan_id_error:
@@ -354,7 +452,10 @@ class LoanService:
             return self._handle_exception('renew_loan', e)
 
     def get_overdue_loans(self) -> Dict[str, Any]:
-        """Get all overdue loans"""
+        """
+        Retrieve all loans that are currently overdue, including calculated fines.
+        :return: Dict[str, Any] - A dictionary containing overdue loan data and total accumulated fines.
+        """
         try:
             loans = self.loan_repo.get_overdue_loans()
 
@@ -386,7 +487,14 @@ class LoanService:
             return self._handle_exception('get_overdue_loans', e)
 
     def get_book_loans(self, book_id: int, page: int = 1, per_page: int = 20) -> Dict[str, Any]:
-        """Get all loans for a specific book"""
+        """
+        Retrieve all loan records for a specific book with pagination and availability info.
+        :param book_id: int - The ID of the book.
+        :param page: int - The page number to retrieve (default is 1).
+        :param per_page: int - Number of loans per page (default is 20).
+        :return: Dict[str, Any] - A dictionary with book info, loan records, availability, and pagination.
+        """
+
         try:
             book_id_error = self._validate_book_id(book_id)
             if book_id_error:
@@ -426,7 +534,11 @@ class LoanService:
             return self._handle_exception('get_book_loans', e)
 
     def get_loan_statistics(self) -> Dict[str, Any]:
-        """Get comprehensive loan statistics"""
+        """
+        Generate and return statistics about all loan activity in the system.
+        :return: Dict[str, Any] - A dictionary of statistics including totals, rates, and outstanding fines.
+        """
+
         try:
             # Get counts for different loan statuses
             total_loans = self.loan_repo.count()
@@ -459,7 +571,12 @@ class LoanService:
             return self._handle_exception('get_loan_statistics', e)
 
     def get_user_active_loans(self, user_id: int) -> Dict[str, Any]:
-        """Get only active loans for a specific user"""
+        """
+        Retrieve all currently active (non-returned) loans for a specific user.
+        :param user_id: int - The ID of the user.
+        :return: Dict[str, Any] - A dictionary with the user's active loan data.
+        """
+
         try:
             user_id_error = self._validate_user_id(user_id)
             if user_id_error:
@@ -485,7 +602,12 @@ class LoanService:
             return self._handle_exception('get_user_active_loans', e)
 
     def get_current_book_loans(self, book_id: int) -> Dict[str, Any]:
-        """Get current active loans for a specific book"""
+        """
+        Retrieve all active loans for a specific book, along with availability details.
+        :param book_id: int - The ID of the book.
+        :return: Dict[str, Any] - A dictionary with active loans, availability info, and count of active loans.
+        """
+
         try:
             book_id_error = self._validate_book_id(book_id)
             if book_id_error:
@@ -515,7 +637,12 @@ class LoanService:
             return self._handle_exception('get_current_book_loans', e)
 
     def get_book_availability(self, book_id: int) -> Dict[str, Any]:
-        """Get detailed availability information for a book"""
+        """
+        Get detailed availability information for a specific book.
+        :param book_id: int - The ID of the book.
+        :return: Dict[str, Any] - A dictionary with availability details or an error message if not found.
+        """
+
         try:
             book_id_error = self._validate_book_id(book_id)
             if book_id_error:
@@ -536,7 +663,13 @@ class LoanService:
             return self._handle_exception('get_book_availability', e)
 
     def delete_loan(self, loan_id: int, force: bool = False) -> Dict[str, Any]:
-        """Delete a loan record (admin operation)"""
+        """
+        Delete a loan record. If the loan is still active, deletion requires admin override via 'force=True'.
+        :param loan_id: int - The ID of the loan to delete.
+        :param force: bool - Whether to force delete an active loan (default is False).
+        :return: Dict[str, Any] - A dictionary indicating success or failure, and loan info if deleted.
+        """
+
         try:
             loan_id_error = self._validate_loan_id(loan_id)
             if loan_id_error:
@@ -593,7 +726,12 @@ class LoanService:
             return self._handle_exception('delete_loan', e)
 
     def _enrich_loan_data(self, loan: Loan) -> Dict[str, Any]:
-        """Enrich loan data with user and book information"""
+        """
+        Add user and book metadata to a loan object for display or API output.
+        :param loan: Loan - The loan object to enrich.
+        :return: Dict[str, Any] - The loan data dictionary enriched with user and book info.
+        """
+
         loan_dict = loan.to_dict()
 
         try:

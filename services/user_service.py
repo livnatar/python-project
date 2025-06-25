@@ -8,13 +8,26 @@ logger = logging.getLogger(__name__)
 
 
 class UserService:
-    """Service layer for user business logic"""
+    """
+    Service layer for user business logic.
+    Provides methods to create, retrieve, and validate users.
+    """
 
     def __init__(self):
+        """
+        Initialize UserService with a UserRepository instance.
+        """
         self.user_repository = UserRepository()
 
-    def _handle_exception(self, operation: str, error: Exception) -> Any:
-        """Handle exceptions consistently"""
+    @staticmethod
+    def _handle_exception(operation: str, error: Exception) -> Any:
+        """
+        Handle exceptions consistently by logging and returning a standard error response.
+        :param operation: str - The name of the operation where the error occurred.
+        :param error: Exception - The caught exception.
+        :return: Dict[str, Any] - Standardized error response dictionary.
+        """
+
         logger.error(f"Error in {operation}: {error}")
         return {
             'success': False,
@@ -22,8 +35,14 @@ class UserService:
             'errors': ['An unexpected error occurred']
         }
 
-    def _validate_user_id(self, user_id: int) -> Optional[Dict[str, Any]]:
-        """Validate user ID format"""
+    @staticmethod
+    def _validate_user_id(user_id: int) -> Optional[Dict[str, Any]]:
+        """
+        Validate the format of a user ID.
+        :param user_id: int - The user ID to validate.
+        :return: Optional[Dict[str, Any]] - Error dictionary if invalid; otherwise None.
+        """
+
         if not isinstance(user_id, int) or user_id <= 0:
             return {
                 'success': False,
@@ -32,8 +51,15 @@ class UserService:
             }
         return None
 
-    def _validate_pagination(self, page: int, per_page: int) -> Tuple[int, int]:
-        """Validate and normalize pagination parameters"""
+    @staticmethod
+    def _validate_pagination(page: int, per_page: int) -> Tuple[int, int]:
+        """
+        Validate and normalize pagination parameters.
+        :param page: int - Requested page number.
+        :param per_page: int - Number of items per page.
+        :return: Tuple[int, int] - Validated and normalized (page, per_page) values.
+        """
+
         if page < 1:
             page = 1
         if per_page < 1 or per_page > 100:
@@ -41,7 +67,12 @@ class UserService:
         return page, per_page
 
     def _get_user_or_error(self, user_id: int) -> Tuple[Optional[User], Optional[Dict[str, Any]]]:
-        """Get user by ID or return error response"""
+        """
+        Retrieve a user by ID or return an error response if not found or invalid.
+        :param user_id: int - The ID of the user to retrieve.
+        :return: Tuple[Optional[User], Optional[Dict[str, Any]]] - User object and None if found; otherwise None and error dict.
+        """
+
         validation_error = self._validate_user_id(user_id)
         if validation_error:
             return None, validation_error
@@ -56,7 +87,13 @@ class UserService:
         return user, None
 
     def _check_username_exists(self, username: str, exclude_id: Optional[int] = None) -> Optional[Dict[str, Any]]:
-        """Check if username exists and return error if it does"""
+        """
+        Check if a username already exists in the system.
+        :param username: str - The username to check.
+        :param exclude_id: Optional[int] - User ID to exclude from the check (for updates).
+        :return: Optional[Dict[str, Any]] - Error dict if username exists; otherwise None.
+        """
+
         if self.user_repository.exists_by_username(username, exclude_id=exclude_id):
             return {
                 'success': False,
@@ -66,7 +103,13 @@ class UserService:
         return None
 
     def _check_email_exists(self, email: str, exclude_id: Optional[int] = None) -> Optional[Dict[str, Any]]:
-        """Check if email exists and return error if it does"""
+        """
+        Check if an email address already exists in the system.
+        :param email: str - The email to check.
+        :param exclude_id: Optional[int] - User ID to exclude from the check (for updates).
+        :return: Optional[Dict[str, Any]] - Error dict if email exists; otherwise None.
+        """
+
         if self.user_repository.exists_by_email(email, exclude_id=exclude_id):
             return {
                 'success': False,
@@ -76,7 +119,12 @@ class UserService:
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> Tuple[Optional[User], Dict[str, Any]]:
-        """Create a new user with validation"""
+        """
+        Create a new user after validating data and checking for duplicates.
+        :param user_data: Dict[str, Any] - User data dictionary with required fields.
+        :return: Tuple[Optional[User], Dict[str, Any]] - Created User object and success message; or None and error dict.
+        """
+
         try:
             # Validate input data
             validation_result = validate_user_data(user_data)
@@ -131,7 +179,12 @@ class UserService:
             return self._handle_exception('create_user', e)
 
     def get_user_by_id(self, user_id: int) -> Tuple[Optional[User], Dict[str, Any]]:
-        """Get user by ID"""
+        """
+        Retrieve a user by their unique ID.
+        :param user_id: int - The user ID.
+        :return: Tuple[Optional[User], Dict[str, Any]] - User object and success message; or None and error dict.
+        """
+
         try:
             user, error = self._get_user_or_error(user_id)
             if error:
@@ -145,7 +198,12 @@ class UserService:
             return self._handle_exception(f"get_user_by_id({user_id})", e)
 
     def get_user_by_username(self, username: str) -> Tuple[Optional[User], Dict[str, Any]]:
-        """Get user by username"""
+        """
+        Retrieve a user by their username.
+        :param username: str - The username.
+        :return: Tuple[Optional[User], Dict[str, Any]] - User object and success message; or None and error dict.
+        """
+
         try:
             if not username or not username.strip():
                 return None, {
@@ -171,7 +229,13 @@ class UserService:
             return self._handle_exception(f"get_user_by_username({username})", e)
 
     def get_all_users(self, page: int = 1, per_page: int = 20) -> Tuple[List[User], Dict[str, Any]]:
-        """Get all users with pagination"""
+        """
+        Retrieve all users with pagination support.
+        :param page: int - The page number to retrieve.
+        :param per_page: int - Number of users per page.
+        :return: Tuple[List[User], Dict[str, Any]] - List of users and pagination metadata.
+        """
+
         try:
             # Validate pagination parameters
             page_normalized, per_page_normalized = self._validate_pagination(page, per_page)
@@ -197,7 +261,13 @@ class UserService:
             return self._handle_exception("get_all_users", e)
 
     def update_user(self, user_id: int, user_data: Dict[str, Any]) -> Tuple[Optional[User], Dict[str, Any]]:
-        """Update user by ID"""
+        """
+        Update user information by user ID with validation and uniqueness checks.
+        :param user_id: int - The ID of the user to update.
+        :param user_data: Dict[str, Any] - Dictionary containing fields to update.
+        :return: Tuple[Optional[User], Dict[str, Any]] - Updated User object and success message; or None and error dict.
+        """
+
         try:
             # Check if user exists
             existing_user, error = self._get_user_or_error(user_id)
@@ -272,7 +342,14 @@ class UserService:
             return self._handle_exception(f"update_user({user_id})", e)
 
     def update_user_password(self, user_id: int, current_password: str, new_password: str) -> Tuple[bool, Dict[str, Any]]:
-        """Update user password with current password verification"""
+        """
+        Update a user's password after verifying the current password and validating the new one.
+        :param user_id: int - The ID of the user whose password is to be changed.
+        :param current_password: str - The user's current password for verification.
+        :param new_password: str - The new password to set.
+        :return: Tuple[bool, Dict[str, Any]] - True and success message if updated; False and error dict otherwise.
+        """
+
         try:
             # Get user
             user = self.user_repository.get_by_id(user_id)
@@ -325,7 +402,12 @@ class UserService:
             return self._handle_exception(f"update_user_password({user_id})", e)
 
     def delete_user(self, user_id: int) -> Tuple[bool, Dict[str, Any]]:
-        """Delete user by ID"""
+        """
+        Delete a user by their user ID.
+        :param user_id: int - The ID of the user to delete.
+        :return: Tuple[bool, Dict[str, Any]] - True and success message if deleted; False and error dict otherwise.
+        """
+
         try:
             # Check if user exists
             user, error = self._get_user_or_error(user_id)
@@ -351,7 +433,14 @@ class UserService:
             return self._handle_exception(f"delete_user({user_id})", e)
 
     def search_users(self, search_term: str, page: int = 1, per_page: int = 20) -> Tuple[List[User], Dict[str, Any]]:
-        """Search users by term with pagination"""
+        """
+        Search for users matching a search term, with pagination support.
+        :param search_term: str - The term to search for in user fields.
+        :param page: int - The page number to retrieve.
+        :param per_page: int - Number of users per page.
+        :return: Tuple[List[User], Dict[str, Any]] - List of matching users and pagination metadata.
+        """
+
         try:
             if not search_term or not search_term.strip():
                 return [], {
@@ -380,7 +469,13 @@ class UserService:
             return self._handle_exception("search_users", e)
 
     def authenticate_user(self, username: str, password: str) -> Tuple[Optional[User], Dict[str, Any]]:
-        """Authenticate user with username and password"""
+        """
+        Authenticate a user by username and password.
+        :param username: str - The username of the user.
+        :param password: str - The password of the user.
+        :return: Tuple[Optional[User], Dict[str, Any]] - User object and success message if authenticated; None and error dict otherwise.
+        """
+
         try:
             if not username or not password:
                 return None, {

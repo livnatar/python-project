@@ -2,9 +2,18 @@ from repositories.open_library_repository import OpenLibraryRepository
 
 
 class ExternalBookService:
+    """
+    A service to interact with the Open Library API for book-related queries.
+    """
 
     @staticmethod
     def get_languages_by_title(title):
+        """
+        Retrieves the languages of a book by its title.
+        :param title: str - The title of the book to search for.
+        :return: dict - A dictionary containing the book title and its languages.
+        """
+
         try:
             data = OpenLibraryRepository.search_book_by_title(title)
             if not data['docs']:
@@ -26,6 +35,12 @@ class ExternalBookService:
 
     @staticmethod
     def get_same_author_books_by_title(title):
+        """
+        Retrieves books by the same author as the book with the given title.
+        :param title: str - The title of the book to search for.
+        :return: dict - A dictionary containing the main book title and a list of books by the same author.
+        """
+
         try:
             data = OpenLibraryRepository.search_book_by_title(title)
             if not data.get('docs'):
