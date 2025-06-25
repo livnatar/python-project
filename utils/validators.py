@@ -118,7 +118,7 @@ def validate_book_data(data: Dict[str, Any]) -> Dict[str, Any]:
             errors.append('Author must not exceed 200 characters')
 
     # Genre validation
-    if data.get('genre_ids'):
+    if 'genre_ids' in data:
         genre_ids = data['genre_ids']
         if not isinstance(genre_ids, list):
             errors.append('Genre IDs must be a list')
