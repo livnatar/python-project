@@ -109,7 +109,6 @@ if __name__ == '__main__':
     print("  - GET    /api/books/genre/<genre_id>")
     print("  - POST   /api/books/<id>/genres")
     print("  - DELETE /api/books/<id>/genres/<genre_id>")
-    print("  - PUT    /api/books/<id>/availability")
     print("\n=== USER ENDPOINTS ===")
     print('POST /api/users')
     print('GET /api/users')

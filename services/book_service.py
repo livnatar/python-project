@@ -440,47 +440,6 @@ class BookService:
         except Exception as e:
             return self._handle_exception('remove_genre_from_book', e)
 
-    def update_book_availability(self, book_id: int, copies_available: int) -> Dict[str, Any]:
-        """Update book availability (used for loans/returns)"""
-        try:
-            book_id_error = self._validate_book_id(book_id)
-            if book_id_error:
-                return {'success': False, 'error': book_id_error}
-
-            # Validate copies_available
-            if not isinstance(copies_available, int) or copies_available < 0:
-                return {
-                    'success': False,
-                    'error': 'Available copies must be a non-negative integer'
-                }
-
-            # Check if book exists
-            book = self.book_repo.get_by_id(book_id)
-            if not book:
-                return {'success': False, 'error': 'Book not found'}
-
-            # Check if available copies doesn't exceed total copies
-            if copies_available > book.copies_total:
-                return {
-                    'success': False,
-                    'error': 'Available copies cannot exceed total copies'
-                }
-
-            # Update availability
-            success = self.book_repo.update_availability(book_id, copies_available)
-            if success:
-                updated_book = self.book_repo.get_by_id(book_id)
-                return {
-                    'success': True,
-                    'data': updated_book.to_dict(),
-                    'message': 'Book availability updated successfully'
-                }
-            else:
-                return {'success': False, 'error': 'Failed to update book availability'}
-
-        except Exception as e:
-            return self._handle_exception('update_book_availability', e)
-
     def get_available_books(self, page: int = 1, per_page: int = 20) -> Dict[str, Any]:
         """Get all currently available books"""
         try:

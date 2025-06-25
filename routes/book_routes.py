@@ -145,17 +145,3 @@ def remove_genre_from_book(book_id: int, genre_id: int):
         return handle_service_result(result)
     except Exception as e:
         return handle_exception('remove_genre_from_book', e)
-
-
-@book_bp.route('/<int:book_id>/availability', methods=['PUT'])
-def update_book_availability(book_id: int):
-    """Update book availability (for loan/return operations)"""
-    try:
-        data, error = get_validated_json(['copies_available'])
-        if error:
-            return error
-
-        result = book_service.update_book_availability(book_id, data['copies_available'])
-        return handle_service_result(result)
-    except Exception as e:
-        return handle_exception('update_book_availability', e)
