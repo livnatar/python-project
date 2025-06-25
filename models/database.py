@@ -16,7 +16,10 @@ DB_PASSWORD = "Aa123456"
 
 
 def get_db_connection():
-    """Get database connection with error handling"""
+    """
+    Get database connection with error handling
+    :return: psycopg2 connection object
+    """
     try:
         conn = psycopg2.connect(
             host=DB_HOST,
@@ -33,7 +36,13 @@ def get_db_connection():
 
 
 def execute_query(query, params=None, fetch=False):
-    """Execute a query with error handling"""
+    """
+    Execute a query with error handling
+    :param query: SQL query to execute
+    :param params: Parameters to pass to the query
+    :param fetch: Whether to fetch results (default: False)
+    :return: Result of the query if fetch is True, otherwise number of affected rows
+    """
     conn = None
     cursor = None
     try:
@@ -62,7 +71,12 @@ def execute_query(query, params=None, fetch=False):
 
 
 def execute_single_query(query, params=None):
-    """Execute a query and return single result"""
+    """
+    Execute a query and return single result
+    :param query: SQL query to execute
+    :param params: Parameters to pass to the query
+    :return: Single result from the query
+    """
     conn = None
     cursor = None
     try:
@@ -85,7 +99,10 @@ def execute_single_query(query, params=None):
 
 
 def test_connection():
-    """Test database connection with detailed error reporting"""
+    """
+    Test database connection with detailed error reporting
+    :return: True if connection is successful, False otherwise
+    """
     try:
         print(f"Connecting to database: {DB_HOST}:{DB_PORT}/{DB_NAME}")
         conn = get_db_connection()

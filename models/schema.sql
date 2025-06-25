@@ -58,19 +58,6 @@ CREATE TABLE IF NOT EXISTS loans (
     FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
 );
 
--- Create reservations table (depends on users and books)
-CREATE TABLE IF NOT EXISTS reservations (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    book_id INTEGER NOT NULL,
-    reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expiry_date TIMESTAMP NOT NULL,
-    status VARCHAR(20) DEFAULT 'active',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
-);
-
-
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_books_isbn ON books(isbn);
 CREATE INDEX IF NOT EXISTS idx_books_title ON books(title);
@@ -86,10 +73,6 @@ CREATE INDEX IF NOT EXISTS idx_loans_user_id ON loans(user_id);
 CREATE INDEX IF NOT EXISTS idx_loans_book_id ON loans(book_id);
 CREATE INDEX IF NOT EXISTS idx_loans_due_date ON loans(due_date);
 CREATE INDEX IF NOT EXISTS idx_loans_returned_date ON loans(returned_date);
-
-CREATE INDEX IF NOT EXISTS idx_reservations_user_id ON reservations(user_id);
-CREATE INDEX IF NOT EXISTS idx_reservations_book_id ON reservations(book_id);
-CREATE INDEX IF NOT EXISTS idx_reservations_status ON reservations(status);
 
 
 -- Insert sample data
