@@ -8,10 +8,19 @@ logger = logging.getLogger(__name__)
 
 
 class BookRepository:
+    """
+    Repository for managing books in the database
+    This class provides methods to create, read, update, delete, and search books.
+    """
 
     @staticmethod
     def create(book: Book, conn=None) -> Optional[Book]:
-        """Create a new book - supports both standalone and transactional usage"""
+        """Create a new book - supports both standalone and transactional usage
+        :param book: Book object to create
+        :param conn: Optional database connection for transactional usage
+        :return: Created Book object with genres, or None if creation failed
+        """
+
         query = """
             INSERT INTO books (isbn, title, author, publication_year, pages, 
                              language, description, copies_total, copies_available)
@@ -52,7 +61,12 @@ class BookRepository:
 
     @staticmethod
     def get_by_id(book_id: int) -> Optional[Book]:
-        """Get book by ID with genres"""
+        """
+        Get book by ID with genres
+        :param book_id: ID of the book to retrieve
+        :return: Book object with genres, or None if not found
+        """
+
         query = """
             SELECT id, isbn, title, author, publication_year, pages, 
                    language, description, copies_total, copies_available
@@ -73,7 +87,12 @@ class BookRepository:
 
     @staticmethod
     def get_by_isbn(isbn: str) -> Optional[Book]:
-        """Get book by ISBN with genres"""
+        """
+        Get book by ISBN with genres
+        :param isbn: ISBN of the book to retrieve
+        :return: Book object with genres, or None if not found
+        """
+
         query = """
             SELECT id, isbn, title, author, publication_year, pages, 
                    language, description, copies_total, copies_available
@@ -94,7 +113,13 @@ class BookRepository:
 
     @staticmethod
     def get_all(limit: int = 50, offset: int = 0) -> List[Book]:
-        """Get all books with pagination and genres"""
+        """
+        Get all books with pagination and genres
+        :param limit: Number of books to return
+        :param offset: Offset for pagination
+        :return: List of Book objects with genres
+        """
+
         query = """
             SELECT id, isbn, title, author, publication_year, pages, 
                    language, description, copies_total, copies_available
@@ -117,7 +142,14 @@ class BookRepository:
 
     @staticmethod
     def search(search_term: str, genre_ids: List[int] = None, limit: int = 50) -> List[Book]:
-        """Search books by title, author, or ISBN with optional genre filter"""
+        """
+        Search books by title, author, or ISBN with optional genre filter
+        :param search_term: Term to search in title, author, or ISBN
+        :param genre_ids: List of genre IDs to filter by (optional)
+        :param limit: Maximum number of results to return
+        :return: List of Book objects matching the search criteria
+        """
+
         if genre_ids:
             # Search with genre filter
             query = """
@@ -160,7 +192,14 @@ class BookRepository:
 
     @staticmethod
     def get_by_genre(genre_id: int, limit: int = 50, offset: int = 0) -> List[Book]:
-        """Get all books in a specific genre"""
+        """
+        Get all books in a specific genre
+        :param genre_id: ID of the genre to filter by
+        :param limit: Number of books to return
+        :param offset: Offset for pagination
+        :return: List of Book objects in the specified genre
+        """
+
         query = """
             SELECT b.id, b.isbn, b.title, b.author, b.publication_year, 
                    b.pages, b.language, b.description, b.copies_total, b.copies_available
@@ -185,7 +224,14 @@ class BookRepository:
 
     @staticmethod
     def update(book_id: int, book: Book, conn=None) -> Optional[Book]:
-        """Update an existing book - supports both standalone and transactional usage"""
+        """
+        Update an existing book - supports both standalone and transactional usage
+        :param book_id: ID of the book to update
+        :param book: Book object with updated data
+        :param conn: Optional database connection for transactional usage
+        :return: Updated Book object with genres, or None if update failed
+        """
+
         query = """
             UPDATE books 
             SET isbn = %s, title = %s, author = %s, publication_year = %s,
@@ -228,7 +274,12 @@ class BookRepository:
 
     @staticmethod
     def delete(book_id: int) -> bool:
-        """Delete a book (this will also delete book-genre relationships due to CASCADE)"""
+        """
+        Delete a book (this will also delete book-genre relationships due to CASCADE)
+        :param book_id: ID of the book to delete
+        :return: True if deletion was successful, False otherwise
+        """
+
         query = "DELETE FROM books WHERE id = %s"
         try:
             rows_affected = execute_query(query, (book_id,))
@@ -239,7 +290,13 @@ class BookRepository:
 
     @staticmethod
     def count(search_term: str = None, genre_id: int = None) -> int:
-        """Get total count of books with optional filters"""
+        """
+        Get total count of books with optional filters
+        :param search_term: Term to filter by title, author, or ISBN
+        :param genre_id: ID of the genre to filter by
+        :return: Total count of books matching the criteria
+        """
+
         if search_term and genre_id:
             query = """
                 SELECT COUNT(DISTINCT b.id) as count 
@@ -279,7 +336,12 @@ class BookRepository:
 
     @staticmethod
     def update_availability(book_id: int, copies_available: int) -> bool:
-        """Update book availability (used when books are borrowed/returned)"""
+        """
+        Update book availability (used when books are borrowed/returned)
+        :param book_id: ID of the book to update
+        :param copies_available: New number of available copies
+        :return: True if update was successful, False otherwise
+        """
         query = "UPDATE books SET copies_available = %s WHERE id = %s"
         try:
             rows_affected = execute_query(query, (copies_available, book_id))
@@ -290,7 +352,13 @@ class BookRepository:
 
     @staticmethod
     def get_available_books(limit: int = 50, offset: int = 0) -> List[Book]:
-        """Get all available books (copies_available > 0)"""
+        """
+        Get all available books (copies_available > 0)
+        :param limit: Number of books to return
+        :param offset: Offset for pagination
+        :return: List of available Book objects with genres
+        """
+
         query = """
             SELECT id, isbn, title, author, publication_year, pages, 
                    language, description, copies_total, copies_available

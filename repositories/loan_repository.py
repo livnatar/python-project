@@ -9,10 +9,20 @@ logger = logging.getLogger(__name__)
 
 
 class LoanRepository:
+    """
+    Repository for managing loans in the library system
+    Provides methods to create, retrieve, update, and delete loans,
+    as well as to check book availability and manage loan statuses.
+    """
 
     @staticmethod
     def create_with_availability_check(loan: Loan) -> Optional[Loan]:
-        """Create a loan only if book has available copies (atomic operation)"""
+        """
+        Create a loan only if book has available copies (atomic operation)
+        :param loan: Loan object to be created
+        :return: Loan object if created successfully, None if no copies available
+        """
+
         # Single atomic transaction that checks and updates in one go
         query = """
             WITH book_check AS (
@@ -55,7 +65,12 @@ class LoanRepository:
 
     @staticmethod
     def get_by_id(loan_id: int) -> Optional[Loan]:
-        """Get loan by ID"""
+        """
+        Get loan by ID
+        :param loan_id:  of the loan to retrieve
+        :return: Loan object or None if not found
+        """
+
         query = """
             SELECT id, user_id, book_id, loan_date, due_date, returned_date, fine_amount
             FROM loans 
@@ -72,7 +87,14 @@ class LoanRepository:
 
     @staticmethod
     def get_all(limit: int = 100, offset: int = 0, status: str = None) -> List[Loan]:
-        """Get all loans with pagination and optional status filter"""
+        """
+        Get all loans with pagination and optional status filter
+        :param limit: Number of loans to return
+        :param offset: Offset for pagination
+        :param status: Filter by loan status ('active', 'returned', 'overdue')
+        :return: List of Loan objects
+        """
+
         base_query = """
             SELECT id, user_id, book_id, loan_date, due_date, returned_date, fine_amount
             FROM loans
@@ -96,7 +118,14 @@ class LoanRepository:
 
     @staticmethod
     def get_by_user_id(user_id: int, limit: int = 100, offset: int = 0) -> List[Loan]:
-        """Get all loans for a specific user"""
+        """
+        Get all loans for a specific user
+        :param user_id: ID of the user to retrieve loans for
+        :param limit: Number of loans to return
+        :param offset: Offset for pagination
+        :return: List of Loan objects
+        """
+
         query = """
             SELECT id, user_id, book_id, loan_date, due_date, returned_date, fine_amount
             FROM loans 
@@ -113,7 +142,14 @@ class LoanRepository:
 
     @staticmethod
     def get_by_book_id(book_id: int, limit: int = 100, offset: int = 0) -> List[Loan]:
-        """Get all loans for a specific book"""
+        """
+        Get all loans for a specific book
+        :param book_id: ID of the book to retrieve loans for
+        :param limit: Number of loans to return
+        :param offset: Offset for pagination
+        :return: List of Loan objects
+        """
+
         query = """
             SELECT id, user_id, book_id, loan_date, due_date, returned_date, fine_amount
             FROM loans 
@@ -130,7 +166,10 @@ class LoanRepository:
 
     @staticmethod
     def get_overdue_loans() -> List[Loan]:
-        """Get all overdue loans"""
+        """Get all overdue loans
+        :return: List of Loan objects that are overdue
+        """
+
         query = """
             SELECT id, user_id, book_id, loan_date, due_date, returned_date, fine_amount
             FROM loans 
@@ -146,7 +185,12 @@ class LoanRepository:
 
     @staticmethod
     def count_active_loans_for_book(book_id: int) -> int:
-        """Count active loans for a specific book"""
+        """
+        Count active loans for a specific book
+        :param book_id: ID of the book to count active loans for
+        :return: Count of active loans for the book
+        """
+
         query = """
             SELECT COUNT(*) as count
             FROM loans 
@@ -161,7 +205,13 @@ class LoanRepository:
 
     @staticmethod
     def return_book_with_availability_update(loan_id: int, returned_date: datetime = None) -> Optional[Loan]:
-        """Mark a loan as returned and update book availability atomically"""
+        """
+        Mark a loan as returned and update book availability atomically
+        :param loan_id: ID of the loan to return
+        :param returned_date: Date the book was returned, defaults to current time if None
+        :return: Loan object if updated successfully, None if loan not found or already returned
+        """
+
         if returned_date is None:
             returned_date = datetime.utcnow()
 
@@ -196,7 +246,13 @@ class LoanRepository:
 
     @staticmethod
     def renew_loan(loan_id: int, new_due_date: datetime) -> Optional[Loan]:
-        """Renew a loan by extending the due date"""
+        """
+        Renew a loan by extending the due date
+        :param loan_id: ID of the loan to renew
+        :param new_due_date: New due date for the loan
+        :return:  object with updated due date if successful, None if loan not found or already returned
+        """
+
         query = """
             UPDATE loans 
             SET due_date = %s
@@ -215,7 +271,13 @@ class LoanRepository:
 
     @staticmethod
     def update_fine(loan_id: int, fine_amount: float) -> Optional[Loan]:
-        """Update the fine amount for a loan"""
+        """
+        Update the fine amount for a loan
+        :param loan_id: ID of the loan to update
+        :param fine_amount: New fine amount to set
+        :return: Loan object with updated fine amount if successful, None if loan not found
+        """
+
         query = """
             UPDATE loans 
             SET fine_amount = %s
@@ -234,7 +296,12 @@ class LoanRepository:
 
     @staticmethod
     def count(status: str = None) -> int:
-        """Get total count of loans"""
+        """
+        Get total count of loans
+        :param status: Filter by loan status ('active', 'returned', 'overdue')
+        :return: Total number of loans matching the status
+        """
+
         base_query = "SELECT COUNT(*) as count FROM loans"
 
         if status == 'active':
@@ -255,7 +322,12 @@ class LoanRepository:
 
     @staticmethod
     def count_user_active_loans(user_id: int) -> int:
-        """Get count of active loans for a user"""
+        """
+        Get count of active loans for a user
+        :param user_id: ID of the user to count active loans for
+        :return: Count of active loans for the user
+        """
+
         query = """
             SELECT COUNT(*) as count 
             FROM loans 
@@ -270,7 +342,12 @@ class LoanRepository:
 
     @staticmethod
     def get_book_availability_info(book_id: int) -> dict:
-        """Get comprehensive availability information for a book"""
+        """
+        Get comprehensive availability information for a book
+        :param book_id: ID of the book to check availability for
+        :return: Dictionary with book availability info including total copies, available copies, total loans ever, and current active loans
+        """
+
         query = """
             SELECT 
                 b.id,
@@ -293,7 +370,12 @@ class LoanRepository:
 
     @staticmethod
     def delete(loan_id: int) -> bool:
-        """Delete a loan (use with caution - usually not needed)"""
+        """
+        Delete a loan (use with caution - usually not needed)
+        :param loan_id: ID of the loan to delete
+        :return: True if deletion was successful, False otherwise
+        """
+
         query = "DELETE FROM loans WHERE id = %s"
         try:
             rows_affected = execute_query(query, (loan_id,))

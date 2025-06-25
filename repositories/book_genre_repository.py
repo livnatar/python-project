@@ -7,10 +7,20 @@ logger = logging.getLogger(__name__)
 
 
 class BookGenreRepository:
+    """
+    Repository for managing book-genre relationships in the database.
+    This class provides methods to create, read, update, delete, and search book-genre relationships.
+    """
 
     @staticmethod
     def create(book_genre: BookGenre, conn=None) -> Optional[BookGenre]:
-        """Create a new book-genre relationship - supports both standalone and transactional usage"""
+        """
+        Create a new book-genre relationship - supports both standalone and transactional usage
+        :param book_genre: BookGenre object containing book_id and genre_id
+        :param conn: Optional database connection for transactional usage
+        :return: BookGenre object if created successfully, None otherwise
+        """
+
         query = """
             INSERT INTO book_genres (book_id, genre_id)
             VALUES (%s, %s)
@@ -37,7 +47,12 @@ class BookGenreRepository:
 
     @staticmethod
     def get_by_id(book_genre_id: int) -> Optional[BookGenre]:
-        """Get book-genre by ID"""
+        """
+        Get book-genre by ID
+        :param book_genre_id:  of the book-genre relationship
+        :return: BookGenre object if found, None otherwise
+        """
+
         query = "SELECT id, book_id, genre_id FROM book_genres WHERE id = %s"
         try:
             result = execute_single_query(query, (book_genre_id,))
@@ -50,7 +65,12 @@ class BookGenreRepository:
 
     @staticmethod
     def get_genres_by_book_id(book_id: int) -> List[Dict[str, Any]]:
-        """Get all genres for a specific book"""
+        """
+        Get all genres for a specific book
+        :param book_id: ID of the book
+        :return: List of dictionaries containing genre details
+        """
+
         query = """
             SELECT g.id, g.name, g.description
             FROM genres g
@@ -67,7 +87,14 @@ class BookGenreRepository:
 
     @staticmethod
     def get_books_by_genre_id(genre_id: int, limit: int = 100, offset: int = 0) -> List[Dict[str, Any]]:
-        """Get all books for a specific genre"""
+        """
+        Get all books for a specific genre
+        :param genre_id: ID of the genre
+        :param limit: Maximum number of books to return
+        :param offset: Offset for pagination
+        :return: List of dictionaries containing book details
+        """
+
         query = """
             SELECT b.*
             FROM books b
@@ -85,7 +112,14 @@ class BookGenreRepository:
 
     @staticmethod
     def add_genre_to_book(book_id: int, genre_id: int, conn=None) -> bool:
-        """Add a genre to a book (if not already assigned) - supports both standalone and transactional usage"""
+        """
+        Add a genre to a book (if not already assigned) - supports both standalone and transactional usage
+        :param book_id: ID of the book
+        :param genre_id: ID of the genre
+        :param conn: Optional database connection for transactional usage
+        :return: True if relationship was created, False if it already exists
+        """
+
         try:
             if conn:
                 # Use provided connection (transactional)
@@ -123,7 +157,14 @@ class BookGenreRepository:
 
     @staticmethod
     def remove_genre_from_book(book_id: int, genre_id: int, conn=None) -> bool:
-        """Remove a genre from a book - supports both standalone and transactional usage"""
+        """
+        Remove a genre from a book - supports both standalone and transactional usage
+        :param book_id: ID of the book
+        :param genre_id: ID of the genre
+        :param conn: Optional database connection for transactional usage
+        :return: True if relationship was removed, False if it did not exist
+        """
+
         query = "DELETE FROM book_genres WHERE book_id = %s AND genre_id = %s"
         try:
             if conn:
@@ -141,7 +182,13 @@ class BookGenreRepository:
 
     @staticmethod
     def remove_all_genres_from_book(book_id: int, conn=None) -> bool:
-        """Remove all genres from a book - supports both standalone and transactional usage"""
+        """
+        Remove all genres from a book - supports both standalone and transactional usage
+        :param book_id: ID of the book
+        :param conn: Optional database connection for transactional usage
+        :return: True if genres were removed, False if book had no genres
+        """
+
         query = "DELETE FROM book_genres WHERE book_id = %s"
         try:
             if conn:
@@ -159,7 +206,11 @@ class BookGenreRepository:
 
     @staticmethod
     def delete_all_books_for_genre(genre_id: int) -> bool:
-        """Remove all books from a genre"""
+        """
+        Remove all books from a genre
+        :param genre_id: ID of the genre
+        :return: True if books were removed, False if genre had no books
+        """
         query = "DELETE FROM book_genres WHERE genre_id = %s"
         try:
             rows_affected = execute_query(query, (genre_id,))
@@ -170,7 +221,13 @@ class BookGenreRepository:
 
     @staticmethod
     def get_all_relationships(limit: int = 100, offset: int = 0) -> List[BookGenre]:
-        """Get all book-genre relationships"""
+        """
+        Get all book-genre relationships
+        :param limit: Maximum number of relationships to return
+        :param offset: Offset for pagination
+        :return: List of BookGenre objects
+        """
+
         query = """
             SELECT id, book_id, genre_id 
             FROM book_genres 
@@ -185,7 +242,12 @@ class BookGenreRepository:
 
     @staticmethod
     def count_books_in_genre(genre_id: int) -> int:
-        """Count how many books are in a specific genre"""
+        """
+        Count how many books are in a specific genre
+        :param genre_id: ID of the genre
+        :return: Count of books in the genre
+        """
+
         query = "SELECT COUNT(*) as count FROM book_genres WHERE genre_id = %s"
         try:
             result = execute_single_query(query, (genre_id,))
@@ -196,7 +258,12 @@ class BookGenreRepository:
 
     @staticmethod
     def count_genres_for_book(book_id: int) -> int:
-        """Count how many genres a book has"""
+        """
+        Count how many genres a book has
+        :param book_id: ID of the book
+        :return: Count of genres for the book
+        """
+
         query = "SELECT COUNT(*) as count FROM book_genres WHERE book_id = %s"
         try:
             result = execute_single_query(query, (book_id,))
@@ -207,7 +274,14 @@ class BookGenreRepository:
 
     @staticmethod
     def update_book_genres(book_id: int, genre_ids: List[int], conn=None) -> bool:
-        """Update all genres for a book (replace existing with new list) - supports both standalone and transactional usage"""
+        """
+        Update all genres for a book (replace existing with new list) - supports both standalone and transactional usage
+        :param book_id: ID of the book
+        :param genre_ids: List of genre IDs to set for the book
+        :param conn: Optional database connection for transactional usage
+        :return: True if genres were updated successfully, False if no changes were made
+        """
+
         try:
             if conn:
                 # Use provided connection (transactional)
@@ -244,7 +318,13 @@ class BookGenreRepository:
 
     @staticmethod
     def exists(book_id: int, genre_id: int) -> bool:
-        """Check if a book-genre relationship exists"""
+        """
+        Check if a book-genre relationship exists
+        :param book_id: ID of the book
+        :param genre_id: ID of the genre
+        :return: True if relationship exists, False otherwise
+        """
+
         query = "SELECT 1 FROM book_genres WHERE book_id = %s AND genre_id = %s"
         try:
             result = execute_single_query(query, (book_id, genre_id))
@@ -256,5 +336,8 @@ class BookGenreRepository:
     # Legacy method name for backward compatibility
     @staticmethod
     def delete_all_genres_for_book(book_id: int) -> bool:
-        """Remove all genres from a book (legacy method name)"""
+        """Remove all genres from a book (legacy method name)
+        :param book_id: ID of the book
+        :return: True if genres were removed, False if book had no genres
+        """
         return BookGenreRepository.remove_all_genres_from_book(book_id)

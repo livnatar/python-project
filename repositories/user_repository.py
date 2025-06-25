@@ -7,10 +7,20 @@ logger = logging.getLogger(__name__)
 
 
 class UserRepository:
-    """Repository layer for User data access operations"""
+    """
+    Repository layer for User data access operations
+    This class provides methods to create, read, update, and delete users,
+    as well as methods for user existence checks and searching.
+    """
 
-    def create(self, user: User) -> Optional[User]:
-        """Create a new user in the database"""
+    @staticmethod
+    def create(user: User) -> Optional[User]:
+        """
+        Create a new user in the database
+        :param user: User object containing user details
+        :return: User object with assigned ID or None if creation failed
+        """
+
         try:
             query = """
                 INSERT INTO users (username, email, password_hash, first_name, last_name, 
@@ -45,8 +55,14 @@ class UserRepository:
             logger.error(f"Error creating user: {e}")
             raise
 
-    def get_by_id(self, user_id: int) -> Optional[User]:
-        """Get user by ID"""
+    @staticmethod
+    def get_by_id(user_id: int) -> Optional[User]:
+        """
+        Get user by ID
+        :param user_id:  of the user to retrieve
+        :return: User object or None if not found
+        """
+
         try:
             query = """
                 SELECT id, username, email, password_hash, first_name, last_name, 
@@ -74,8 +90,14 @@ class UserRepository:
             logger.error(f"Error getting user by ID {user_id}: {e}")
             raise
 
-    def get_by_username(self, username: str) -> Optional[User]:
-        """Get user by username"""
+    @staticmethod
+    def get_by_username(username: str) -> Optional[User]:
+        """
+        Get user by username
+        :param username:  of the user to retrieve
+        :return: User object or None if not found
+        """
+
         try:
             query = """
                 SELECT id, username, email, password_hash, first_name, last_name, 
@@ -103,8 +125,13 @@ class UserRepository:
             logger.error(f"Error getting user by username {username}: {e}")
             raise
 
-    def get_by_email(self, email: str) -> Optional[User]:
-        """Get user by email"""
+    @staticmethod
+    def get_by_email(email: str) -> Optional[User]:
+        """Get user by email
+        :param email:  of the user to retrieve
+        :return: User object or None if not found
+        """
+
         try:
             query = """
                 SELECT id, username, email, password_hash, first_name, last_name, 
@@ -132,8 +159,15 @@ class UserRepository:
             logger.error(f"Error getting user by email {email}: {e}")
             raise
 
-    def get_all(self, limit: int = 100, offset: int = 0) -> List[User]:
-        """Get all users with pagination"""
+    @staticmethod
+    def get_all(limit: int = 100, offset: int = 0) -> List[User]:
+        """
+        Get all users with pagination
+        :param limit:  number of users to return
+        :param offset:  number of users to skip
+        :return: List of User objects
+        """
+
         try:
             query = """
                 SELECT id, username, email, password_hash, first_name, last_name, 
@@ -166,7 +200,13 @@ class UserRepository:
             raise
 
     def update(self, user_id: int, user_data: Dict[str, Any]) -> Optional[User]:
-        """Update user by ID"""
+        """
+        Update user by ID
+        :param user_id:  of the user to update
+        :param user_data: Dictionary containing fields to update
+        :return: Updated User object or None if update failed
+        """
+
         try:
             # Build dynamic update query
             set_clauses = []
@@ -214,8 +254,14 @@ class UserRepository:
             logger.error(f"Error updating user {user_id}: {e}")
             raise
 
-    def delete(self, user_id: int) -> bool:
-        """Delete user by ID"""
+    @staticmethod
+    def delete(user_id: int) -> bool:
+        """
+        Delete user by ID
+        :param user_id:  of the user to delete
+        :return: True if user was deleted, False otherwise
+        """
+
         try:
             query = "DELETE FROM users WHERE id = %s"
             rows_affected = execute_query(query, (user_id,))
@@ -225,8 +271,15 @@ class UserRepository:
             logger.error(f"Error deleting user {user_id}: {e}")
             raise
 
-    def exists_by_username(self, username: str, exclude_id: Optional[int] = None) -> bool:
-        """Check if username exists (optionally excluding a specific user ID)"""
+    @staticmethod
+    def exists_by_username(username: str, exclude_id: Optional[int] = None) -> bool:
+        """
+        Check if username exists (optionally excluding a specific user ID)
+        :param username:  to check for existence
+        :param exclude_id:  of the user to exclude from the check
+        :return: True if username exists, False otherwise
+        """
+
         try:
             if exclude_id:
                 query = "SELECT 1 FROM users WHERE username = %s AND id != %s"
@@ -241,8 +294,14 @@ class UserRepository:
             logger.error(f"Error checking username existence: {e}")
             raise
 
-    def exists_by_email(self, email: str, exclude_id: Optional[int] = None) -> bool:
-        """Check if email exists (optionally excluding a specific user ID)"""
+    @staticmethod
+    def exists_by_email(email: str, exclude_id: Optional[int] = None) -> bool:
+        """Check if email exists (optionally excluding a specific user ID)
+        :param email:  to check for existence
+        :param exclude_id:  of the user to exclude from the check
+        :return: True if email exists, False otherwise
+        """
+
         try:
             if exclude_id:
                 query = "SELECT 1 FROM users WHERE email = %s AND id != %s"
@@ -257,8 +316,13 @@ class UserRepository:
             logger.error(f"Error checking email existence: {e}")
             raise
 
-    def get_count(self) -> int:
-        """Get total count of users"""
+    @staticmethod
+    def get_count() -> int:
+        """
+        Get total count of users
+        :return: Total number of users
+        """
+
         try:
             query = "SELECT COUNT(*) as count FROM users"
             result = execute_single_query(query)
@@ -268,8 +332,16 @@ class UserRepository:
             logger.error(f"Error getting user count: {e}")
             raise
 
-    def search_users(self, search_term: str, limit: int = 50, offset: int = 0) -> List[User]:
-        """Search users by username, email, or name"""
+    @staticmethod
+    def search_users(search_term: str, limit: int = 50, offset: int = 0) -> List[User]:
+        """
+        Search users by username, email, or name
+        :param search_term:  term to search for in username, email, first name, last name
+        :param limit:  maximum number of results to return
+        :param offset:  number of results to skip
+        :return: List of User objects matching the search term
+        """
+
         try:
             query = """
                 SELECT id, username, email, password_hash, first_name, last_name, 

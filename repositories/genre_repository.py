@@ -8,10 +8,19 @@ logger = logging.getLogger(__name__)
 
 
 class GenreRepository:
+    """
+    Repository for managing genres in the database
+    This class provides methods to create, read, update, delete, and search genres.
+    """
 
     @staticmethod
     def create(genre: Genre) -> Optional[Genre]:
-        """Create a new genre"""
+        """
+        Create a new genre
+        :param genre:  object to be created
+        :return:  Genre object or None if creation failed
+        """
+
         query = """
             INSERT INTO genres (name, description)
             VALUES (%s, %s)
@@ -28,7 +37,12 @@ class GenreRepository:
 
     @staticmethod
     def get_by_id(genre_id: int) -> Optional[Genre]:
-        """Get genre by ID"""
+        """
+        Get genre by ID
+        :param genre_id:  of the genre to retrieve
+        :return: Genre object or None if not found
+        """
+
         query = "SELECT id, name, description FROM genres WHERE id = %s"
         try:
             result = execute_single_query(query, (genre_id,))
@@ -41,7 +55,12 @@ class GenreRepository:
 
     @staticmethod
     def get_by_name(name: str) -> Optional[Genre]:
-        """Get genre by name"""
+        """
+        Get genre by name
+        :param name:  of the genre to retrieve
+        :return: Genre object or None if not found
+        """
+
         query = "SELECT id, name, description FROM genres WHERE LOWER(name) = LOWER(%s)"
         try:
             result = execute_single_query(query, (name,))
@@ -54,7 +73,13 @@ class GenreRepository:
 
     @staticmethod
     def get_all(limit: int = 100, offset: int = 0) -> List[Genre]:
-        """Get all genres with pagination"""
+        """
+        Get all genres with pagination
+        :param limit:  number of genres to return
+        :param offset:  number of genres to skip
+        :return: List of Genre objects
+        """
+
         query = """
             SELECT id, name, description
             FROM genres 
@@ -70,7 +95,13 @@ class GenreRepository:
 
     @staticmethod
     def update(genre_id: int, genre: Genre) -> Optional[Genre]:
-        """Update an existing genre"""
+        """
+        Update an existing genre
+        :param genre_id:  of the genre to update
+        :param genre:  object with updated data
+        :return: Updated Genre object or None if update failed
+        """
+
         query = """
             UPDATE genres 
             SET name = %s, description = %s
@@ -88,7 +119,12 @@ class GenreRepository:
 
     @staticmethod
     def delete(genre_id: int) -> bool:
-        """Delete a genre"""
+        """
+        Delete a genre
+        :param genre_id:  of the genre to delete
+        :return: True if deletion was successful, False otherwise
+        """
+
         query = "DELETE FROM genres WHERE id = %s"
         try:
             rows_affected = execute_query(query, (genre_id,))
@@ -99,7 +135,11 @@ class GenreRepository:
 
     @staticmethod
     def count() -> int:
-        """Get total count of genres"""
+        """
+        Get total count of genres
+        :return: Total number of genres
+        """
+
         query = "SELECT COUNT(*) as count FROM genres"
         try:
             result = execute_single_query(query)
@@ -110,7 +150,13 @@ class GenreRepository:
 
     @staticmethod
     def search(search_term: str, limit: int = 50) -> List[Genre]:
-        """Search genres by name or description"""
+        """
+        Search genres by name or description
+        :param search_term:  term to search for in name or description
+        :param limit:  maximum number of results to return
+        :return: List of Genre objects matching the search term
+        """
+
         query = """
             SELECT id, name, description 
             FROM genres 

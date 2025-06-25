@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="add requirements and delete unused library">
-      <change beforePath="$PROJECT_DIR$/models/book_genre_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/book_genre_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/book_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/book_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/database.py" afterDir="false" />
+    <list default="true" id="1e2f0d8d-f9ef-491c-ad71-d6931c00ce60" name="Changes" comment="add documentation to models directory">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repositories/book_genre_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/book_genre_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repositories/book_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/book_repository.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,7 +202,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750833927391</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="add documentation to models directory">
+      <option name="closed" value="true" />
+      <created>1750835206651</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1750835206651</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -220,6 +228,7 @@
     <MESSAGE value="start to add external api" />
     <MESSAGE value="add external layer" />
     <MESSAGE value="add requirements and delete unused library" />
-    <option name="LAST_COMMIT_MESSAGE" value="add requirements and delete unused library" />
+    <MESSAGE value="add documentation to models directory" />
+    <option name="LAST_COMMIT_MESSAGE" value="add documentation to models directory" />
   </component>
 </project>
