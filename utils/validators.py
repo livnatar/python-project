@@ -108,7 +108,7 @@ def validate_book_data(data: Dict[str, Any]) -> Dict[str, Any]:
     errors = []
 
     # Required fields
-    required_fields = ['isbn', 'title', 'author']
+    required_fields = ['isbn', 'title', 'author','genre_ids']
     for field in required_fields:
         if not data.get(field):
             errors.append(f'{field.replace("_", " ").title()} is required')
