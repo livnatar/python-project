@@ -9,6 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class BookService:
     """
     Service class for managing book operations including creation, updating,
@@ -336,11 +337,11 @@ class BookService:
 
             if available_only:
                 books = self.book_repo.get_available_books(limit=per_page, offset=offset)
-                total = self.book_repo.count()  # Could be improved to count only available
+                total = len(books)
             elif search and search.strip():
                 genre_ids = [genre_id] if genre_id else None
                 books = self.book_repo.search(search.strip(), genre_ids=genre_ids, limit=per_page)
-                total = len(books)  # For search, we estimate
+                total = len(books)
             elif genre_id:
                 books = self.book_repo.get_by_genre(genre_id, limit=per_page, offset=offset)
                 total = self.book_repo.count(genre_id=genre_id)
@@ -540,7 +541,6 @@ class BookService:
             offset = (page - 1) * per_page
 
             books = self.book_repo.get_available_books(limit=per_page, offset=offset)
-            # For total count, we could create a specific method, but for now we'll estimate
             total = len(books) + offset if len(books) == per_page else len(books) + offset
 
             return {
@@ -549,7 +549,7 @@ class BookService:
                 'pagination': {
                     'page': page,
                     'per_page': per_page,
-                    'total': total,  # This is an estimate
+                    'total': total,
                     'pages': (total + per_page - 1) // per_page
                 }
             }

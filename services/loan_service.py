@@ -690,7 +690,6 @@ class LoanService:
             # If deleting an active loan (force=true), we need to update book availability
             if not loan.returned_date and force:
                 logger.warning(f"Force deleting active loan {loan_id}. Updating book availability.")
-                # This should update the book's available copies since we're removing an active loan
                 current_availability = self.loan_repo.get_book_availability_info(loan.book_id)
                 if current_availability:
                     new_available = current_availability.get('copies_available', 0) + 1

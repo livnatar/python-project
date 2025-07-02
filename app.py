@@ -27,7 +27,7 @@ def create_app(config_class=Config):
     """
 
     app = Flask(__name__)
-    CORS(app)  # Add CORS like your working project
+    CORS(app)
     app.config.from_object(config_class)
 
     # Register blueprints
@@ -52,7 +52,7 @@ def create_app(config_class=Config):
             'status': 'Running',
         })
 
-    # Health check endpoint (test DB connection here, not on startup)
+    # Health check endpoint
     @app.route('/health')
     def health_check():
         """

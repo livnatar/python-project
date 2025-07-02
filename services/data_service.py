@@ -51,7 +51,6 @@ class DataService:
         if not enriched_loans:
             return pd.DataFrame()
 
-        # Use pandas json_normalize - it's designed exactly for this
         df = pd.json_normalize(enriched_loans)
 
         # Convert date columns to proper datetime
@@ -76,8 +75,6 @@ class DataService:
         """
 
         file_path = self._create_temp_excel_file(filename_prefix)
-
-        # Simple Excel export - pandas handles everything
         df.to_excel(file_path, sheet_name='Data', index=False, engine='openpyxl')
 
         result = {
@@ -136,7 +133,7 @@ class DataService:
         except Exception as e:
             return self._handle_exception(f'export_{filename_prefix}', e)
 
-    def export_user_loans_to_excel(self, username: str, **kwargs) -> Dict[str, Any]:
+    def export_user_loans_to_excel(self, username: str) -> Dict[str, Any]:
         """
         Export user loans to Excel
         :param username: Username of the user whose loans to export
@@ -155,7 +152,7 @@ class DataService:
             error_message=f'No loans found for user "{username}"'
         )
 
-    def export_all_loans_to_excel(self, status_filter: str = None, **kwargs) -> Dict[str, Any]:
+    def export_all_loans_to_excel(self, status_filter: str = None) -> Dict[str, Any]:
         """
         Export all loans to Excel
         :param status_filter: Optional filter for loan status (e.g., 'active', 'overdue')
@@ -170,7 +167,7 @@ class DataService:
             error_message='No loans found'
         )
 
-    def export_overdue_loans_to_excel(self, **kwargs) -> Dict[str, Any]:
+    def export_overdue_loans_to_excel(self) -> Dict[str, Any]:
         """
         Export overdue loans to Excel
         :return: Dictionary with result information

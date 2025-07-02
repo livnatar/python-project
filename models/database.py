@@ -2,7 +2,6 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import logging
 
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -120,6 +119,7 @@ def test_connection():
     except Exception as e:
         logger.error(f"Connection test failed: {e}")
         return False
+
 
 if __name__ == "__main__":
     # Read and execute SQL file
