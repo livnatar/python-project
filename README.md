@@ -79,6 +79,7 @@ cd python-project
 ### 2. Start Docker Container
 
 Turn on your Docker container to set up the development environment.
+Make sure the database connection parameters in database.py match your Docker setup. Update them if needed.
 
 ### 3. Initialize the Database
 
